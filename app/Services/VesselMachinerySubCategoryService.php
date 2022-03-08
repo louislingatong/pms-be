@@ -23,9 +23,7 @@ class VesselMachinerySubCategoryService
      *
      * @param VesselMachinerySubCategory $vesselMachinerySubCategory
      */
-    public function __construct(
-        VesselMachinerySubCategory $vesselMachinerySubCategory,
-    )
+    public function __construct(VesselMachinerySubCategory $vesselMachinerySubCategory)
     {
         $this->vesselMachinerySubCategory = $vesselMachinerySubCategory;
     }
@@ -59,7 +57,7 @@ class VesselMachinerySubCategoryService
         }
 
         $results = $query->skip($skip)
-            ->orderBy('id', 'DESC')
+            ->orderBy('id', 'ASC')
             ->paginate($limit);
 
         $urlParams = ['keyword' => $conditions['keyword'], 'limit' => $limit];
@@ -112,6 +110,39 @@ class VesselMachinerySubCategoryService
         }
 
         return $vesselSubCategory;
+    }
+
+    /**
+     * Get the job due date
+     *
+     * @param string $date
+     * @param Interval $interval
+     * @return Carbon
+     */
+    public function getDueDate(string $date, Interval $interval): Carbon
+    {
+        $dueDate = Carbon::create($date);
+
+        /** @var IntervalUnit $intervalUnit */
+        $intervalUnit = $interval->unit;
+        switch ($intervalUnit->getAttribute('name')) {
+            case config('interval.units.days'):
+                $dueDate->addDays($interval->getAttribute('value'));
+                break;
+            case config('interval.units.hours'):
+                $dueDate->addHours($interval->getAttribute('value'));
+                break;
+            case config('interval.units.weeks'):
+                $dueDate->addWeeks($interval->getAttribute('value'));
+                break;
+            case config('interval.units.months'):
+                $dueDate->addMonths($interval->getAttribute('value'));
+                break;
+            case config('interval.units.years'):
+                $dueDate->addYears($interval->getAttribute('value'));
+                break;
+        }
+        return $dueDate;
     }
 
     /**
@@ -174,38 +205,5 @@ class VesselMachinerySubCategoryService
         }
         $vesselMachinerySubCategory->delete();
         return true;
-    }
-
-    /**
-     * Get the job due date
-     *
-     * @param string $date
-     * @param Interval $interval
-     * @return Carbon
-     */
-    public function getDueDate(string $date, Interval $interval): Carbon
-    {
-        $dueDate = Carbon::create($date);
-
-        /** @var IntervalUnit $intervalUnit */
-        $intervalUnit = $interval->unit;
-        switch ($intervalUnit->getAttribute('name')) {
-            case config('interval.units.days'):
-                $dueDate->addDays($interval->getAttribute('value'));
-                break;
-            case config('interval.units.hours'):
-                $dueDate->addHours($interval->getAttribute('value'));
-                break;
-            case config('interval.units.weeks'):
-                $dueDate->addWeeks($interval->getAttribute('value'));
-                break;
-            case config('interval.units.months'):
-                $dueDate->addMonths($interval->getAttribute('value'));
-                break;
-            case config('interval.units.years'):
-                $dueDate->addYears($interval->getAttribute('value'));
-                break;
-        }
-        return $dueDate;
     }
 }

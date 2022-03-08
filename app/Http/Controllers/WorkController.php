@@ -80,6 +80,7 @@ class WorkController extends Controller
             $formData = [
                 'vessel_machinery_sub_category_Ids' => $request->getVesselMachinerySubCategoryIds(),
                 'last_done' => Carbon::create($request->getLastDone()),
+                'running_hours' => $request->getRunningHours(),
                 'instructions' => $request->getInstructions(),
                 'remarks' => $request->getRemarks(),
                 'creator_id' => $creator->getAttribute('id')

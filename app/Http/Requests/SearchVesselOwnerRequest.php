@@ -33,11 +33,11 @@ class SearchVesselOwnerRequest extends FormRequest
 
     public function getPage()
     {
-        return $this->input('page', 1); // page default to 1.
+        return (int)$this->input('page', 1); // page default to 1.
     }
 
     public function getLimit()
     {
-        return $this->input('limit', config('search.results_per_page')); // set via config
+        return (int)$this->input('limit', config('search.results_per_page')); // set via config
     }
 }

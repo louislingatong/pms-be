@@ -78,6 +78,8 @@ class VesselMachineryController extends Controller
                 'vessel' => $request->getVessel(),
                 'machinery' => $request->getMachinery(),
                 'incharge_rank' => $request->getInchargeRank(),
+                'model' => $request->getModel(),
+                'maker' => $request->getMaker(),
                 'installed_date' => Carbon::create($request->getInstalledDate()),
             ];
             $vesselMachinery = $this->vesselMachineryService->create($formData);
@@ -128,6 +130,8 @@ class VesselMachineryController extends Controller
                 'vessel' => $request->getVessel(),
                 'machinery' => $request->getMachinery(),
                 'incharge_rank' => $request->getInchargeRank(),
+                'model' => $request->getModel(),
+                'maker' => $request->getMaker(),
                 'installed_date' => Carbon::create($request->getInstalledDate()),
             ];
             $vesselMachinery = $this->vesselMachineryService->update($formData, $vesselMachinery);

@@ -25,6 +25,8 @@ class VesselMachineryResource extends JsonResource
             'vessel' => new VesselResource($vesselMachinery->vessel),
             'machinery' => new MachineryResource($vesselMachinery->machinery),
             'incharge_rank' => new RankResource($vesselMachinery->inchargeRank),
+            'model' => $vesselMachinery->model ?: new MachineryModelResource($vesselMachinery->model),
+            'maker' => $vesselMachinery->maker ?: new MachineryMakerResource($vesselMachinery->maker),
             'sub_categories' => VesselMachinerySubCategoryResource::collection($vesselMachinery->subCategories),
         ];
     }

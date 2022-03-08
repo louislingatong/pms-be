@@ -12,29 +12,25 @@ class UserSignUp extends Mailable
     use Queueable, SerializesModels;
 
     /**
-     * @var User
-     */
-    protected $user;
-
-    /**
      * @var string
      */
     public $view;
-
-    /**
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * @var string
-     */
-    protected $password;
-
     /**
      * @var string
      */
     public $subject;
+    /**
+     * @var User
+     */
+    protected $user;
+    /**
+     * @var string
+     */
+    protected $url;
+    /**
+     * @var string
+     */
+    protected $password;
 
     /**
      * Create a new message instance.

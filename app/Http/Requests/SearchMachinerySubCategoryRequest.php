@@ -15,7 +15,6 @@ class SearchMachinerySubCategoryRequest extends FormRequest
     {
         return [
             'keyword' => 'nullable',
-
             'page' => [
                 'nullable',
                 'numeric',
@@ -30,11 +29,6 @@ class SearchMachinerySubCategoryRequest extends FormRequest
     public function getKeyword()
     {
         return $this->input('keyword', '');
-    }
-
-    public function getStatus()
-    {
-        return $this->input('status', '');
     }
 
     public function getPage()

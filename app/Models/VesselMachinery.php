@@ -23,6 +23,8 @@ class VesselMachinery extends Model
         'vessel_id',
         'machinery_id',
         'incharge_rank_id',
+        'machinery_model_id',
+        'machinery_maker_id',
     ];
 
     /**
@@ -56,6 +58,26 @@ class VesselMachinery extends Model
     }
 
     /**
+     * Retrieves the model of the vessel machinery
+     *
+     * @return BelongsTo MachineryModel
+     */
+    public function model(): BelongsTo
+    {
+        return $this->belongsTo(MachineryModel::class, 'machinery_model_id');
+    }
+
+    /**
+     * Retrieves the maker of the vessel machinery
+     *
+     * @return BelongsTo MachineryMaker
+     */
+    public function maker(): BelongsTo
+    {
+        return $this->belongsTo(MachineryMaker::class, 'machinery_maker_id');
+    }
+
+    /**
      * Retrieve all vessel sub categories under this vessel machinery
      *
      * @return HasMany MachinerySubCategory[]
@@ -73,7 +95,7 @@ class VesselMachinery extends Model
     public function currentRunningHour(): HasOne
     {
         return $this->HasOne(RunningHour::class, 'vessel_machinery_id')
-            ->orderBy('id', 'DESC');
+            ->orderBy('id', 'ASC');
     }
 
     /**
@@ -84,7 +106,7 @@ class VesselMachinery extends Model
     public function runningHoursHistory(): HasMany
     {
         return $this->hasMany(RunningHour::class)
-            ->orderBy('id', 'DESC');
+            ->orderBy('id', 'ASC');
     }
 
     /**

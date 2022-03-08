@@ -24,7 +24,7 @@ class UpdateMachinerySubCategoryRequest extends FormRequest
 
     public function getMachineryId()
     {
-        return $this->input('machinery_id', null);
+        return (int)$this->input('machinery_id', null);
     }
 
     public function getName()

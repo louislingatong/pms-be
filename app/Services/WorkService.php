@@ -5,12 +5,10 @@ namespace App\Services;
 use App\Http\Resources\VesselMachinerySubCategoryWorkResource;
 use App\Models\Interval;
 use App\Models\IntervalUnit;
-use App\Models\VesselMachinery;
 use App\Models\VesselMachinerySubCategory;
 use App\Models\Work;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -84,7 +82,7 @@ class WorkService
         }
 
         $results = $query->skip($skip)
-            ->orderBy('id', 'DESC')
+            ->orderBy('id', 'ASC')
             ->paginate($limit);
 
         $urlParams = ['keyword' => $conditions['keyword'], 'limit' => $limit];
@@ -111,6 +109,7 @@ class WorkService
                 $work = $this->work->create([
                     'vessel_machinery_sub_category_id' => $id,
                     'last_done' => $params['last_done'],
+                    'running_hours' => $params['running_hours'],
                     'instructions' => $params['instructions'],
                     'remarks' => $params['remarks'],
                     'creator_id' => $params['creator_id'],

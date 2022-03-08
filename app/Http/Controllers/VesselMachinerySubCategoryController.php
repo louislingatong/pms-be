@@ -44,7 +44,6 @@ class VesselMachinerySubCategoryController extends Controller
         try {
             $conditions = [
                 'keyword' => $request->getKeyword(),
-                'status' => $request->getStatus(),
                 'page' => $request->getPage(),
                 'limit' => $request->getLimit(),
             ];

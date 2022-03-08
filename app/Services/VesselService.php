@@ -53,7 +53,7 @@ class VesselService
         }
 
         $results = $query->skip($skip)
-            ->orderBy('id', 'DESC')
+            ->orderBy('id', 'ASC')
             ->paginate($limit);
 
         $urlParams = ['keyword' => $conditions['keyword'], 'limit' => $limit];
@@ -88,6 +88,18 @@ class VesselService
     }
 
     /**
+     * Retrieve/Create the machinery maker
+     *
+     * @param string $name
+     * @return VesselOwner
+     * @throws
+     */
+    public function findOrCreateVesselOwnerByName(string $name): VesselOwner
+    {
+        return VesselOwner::firstOrCreate(['name' => $name]);
+    }
+
+    /**
      * Updates vessel in the database
      *
      * @param array $params
@@ -117,17 +129,5 @@ class VesselService
         }
         $vessel->delete();
         return true;
-    }
-
-    /**
-     * Retrieve/Create the machinery maker
-     *
-     * @param string $name
-     * @return VesselOwner
-     * @throws
-     */
-    public function findOrCreateVesselOwnerByName(string $name): VesselOwner
-    {
-        return VesselOwner::firstOrCreate(['name' => $name]);
     }
 }

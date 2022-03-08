@@ -3,8 +3,6 @@
 namespace App\Imports;
 
 use App\Models\Machinery;
-use App\Models\MachineryMaker;
-use App\Models\MachineryModel;
 use App\Models\VesselDepartment;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -30,21 +28,10 @@ class MachineryImport implements ToCollection, WithHeadingRow, SkipsOnError, Wit
             $department = VesselDepartment::where('name', $row['department'])->first();
 
             $formData = [
+                'vessel_department_id' => $department->getAttribute('id'),
                 'name' => $row['name'],
                 'code_name' => $row['code_name'],
-                'vessel_department_id' => $department->getAttribute('id'),
             ];
-
-            if ($row['model']) {
-                /** @var MachineryModel $model */
-                $model = MachineryModel::firstOrCreate(['name' => $row['model']]);
-                $formData['machinery_model_id'] = $model->getAttribute('id');
-            }
-            if ($row['maker']) {
-                /** @var MachineryMaker $maker */
-                $maker = MachineryMaker::firstOrCreate(['name' => $row['maker']]);
-                $formData['machinery_maker_id'] = $maker->getAttribute('id');
-            }
 
             Machinery::create($formData);
         }

@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SearchEmployeeDepartmentRequest;
 use App\Services\EmployeeDepartmentService;
-use Illuminate\Http\JsonResponse;
 use Exception;
+use Illuminate\Http\JsonResponse;
 
 class EmployeeDepartmentController extends Controller
 {

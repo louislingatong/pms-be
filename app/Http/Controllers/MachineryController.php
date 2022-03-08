@@ -78,8 +78,6 @@ class MachineryController extends Controller
                 'vessel_department' => $request->getDepartment(),
                 'code_name' => $request->getCodeName(),
                 'name' => $request->getName(),
-                'model' => $request->getModel(),
-                'maker' => $request->getMaker(),
             ];
             $machinery = $this->machineryService->create($formData);
             $this->response['data'] = new MachineryResource($machinery);
@@ -129,8 +127,6 @@ class MachineryController extends Controller
                 'vessel_department' => $request->getDepartment(),
                 'code_name' => $request->getCodeName(),
                 'name' => $request->getName(),
-                'model' => $request->getModel(),
-                'maker' => $request->getMaker(),
             ];
             $machinery = $this->machineryService->update($formData, $machinery);
             $this->response['data'] = new MachineryResource($machinery);

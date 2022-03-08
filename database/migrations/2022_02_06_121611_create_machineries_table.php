@@ -18,22 +18,12 @@ class CreateMachineriesTable extends Migration
             $table->unsignedBigInteger('vessel_department_id');
             $table->string('code_name')->nullable();
             $table->string('name');
-            $table->unsignedBigInteger('machinery_model_id')->nullable();
-            $table->unsignedBigInteger('machinery_maker_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('vessel_department_id')
                 ->references('id')
                 ->on('vessel_departments')
-                ->onDelete('cascade');
-            $table->foreign('machinery_model_id')
-                ->references('id')
-                ->on('machinery_models')
-                ->onDelete('cascade');
-            $table->foreign('machinery_maker_id')
-                ->references('id')
-                ->on('machinery_makers')
                 ->onDelete('cascade');
         });
     }

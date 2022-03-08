@@ -39,7 +39,7 @@ class UpdateEmployeeRequest extends FormRequest
         ];
     }
 
-    public function getId(): int
+    public function getId()
     {
         /** @var Employee $employee */
         $employee = $this->route('employee');

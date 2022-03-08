@@ -31,7 +31,7 @@ class UpdateUserRequest extends FormRequest
         ];
     }
 
-    public function getId(): int
+    public function getId()
     {
         /** @var User $user */
         $user = $this->route('user');
@@ -56,10 +56,5 @@ class UpdateUserRequest extends FormRequest
     public function getPassword()
     {
         return $this->input('password', null);
-    }
-
-    public function getAvatar()
-    {
-        return $this->file('avatar', null);
     }
 }

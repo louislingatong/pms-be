@@ -21,8 +21,6 @@ class Machinery extends Model
         'vessel_department_id',
         'code_name',
         'name',
-        'machinery_model_id',
-        'machinery_maker_id',
     ];
 
     /**
@@ -33,26 +31,6 @@ class Machinery extends Model
     public function department(): BelongsTo
     {
         return $this->belongsTo(VesselDepartment::class, 'vessel_department_id');
-    }
-
-    /**
-     * Retrieves the model of the machinery
-     *
-     * @return BelongsTo MachineryModel
-     */
-    public function model(): BelongsTo
-    {
-        return $this->belongsTo(MachineryModel::class, 'machinery_model_id');
-    }
-
-    /**
-     * Retrieves the maker of the machinery
-     *
-     * @return BelongsTo MachineryMaker
-     */
-    public function maker(): BelongsTo
-    {
-        return $this->belongsTo(MachineryMaker::class, 'machinery_maker_id');
     }
 
     /**

@@ -17,6 +17,7 @@ class CreateWorksTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('vessel_machinery_sub_category_id');
             $table->timestamp('last_done');
+            $table->string('running_hours')->nullable();
             $table->string('instructions')->nullable();
             $table->string('remarks')->nullable();
             $table->unsignedBigInteger('creator_id');

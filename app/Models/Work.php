@@ -18,6 +18,7 @@ class Work extends Model
     protected $fillable = [
         'vessel_machinery_sub_category_id',
         'last_done',
+        'running_hours',
         'instructions',
         'remarks',
         'creator_id',

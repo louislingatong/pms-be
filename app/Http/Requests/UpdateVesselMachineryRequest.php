@@ -26,6 +26,8 @@ class UpdateVesselMachineryRequest extends FormRequest
                 'required',
                 'exists:ranks,name',
             ],
+            'model' => 'nullable',
+            'maker' => 'nullable',
             'installed_date' => [
                 'required',
                 'date',
@@ -47,6 +49,16 @@ class UpdateVesselMachineryRequest extends FormRequest
     public function getInchargeRank()
     {
         return $this->input('incharge_rank', null);
+    }
+
+    public function getModel()
+    {
+        return $this->input('model', null);
+    }
+
+    public function getMaker()
+    {
+        return $this->input('maker', null);
     }
 
     public function getInstalledDate()

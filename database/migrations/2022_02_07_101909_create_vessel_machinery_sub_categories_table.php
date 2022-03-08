@@ -15,7 +15,7 @@ class CreateVesselMachinerySubCategoriesTable extends Migration
     {
         Schema::create('vessel_machinery_sub_categories', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('code')->unique();
+            $table->string('code');
             $table->timestamp('due_date');
             $table->unsignedBigInteger('interval_id');
             $table->unsignedBigInteger('vessel_machinery_id');

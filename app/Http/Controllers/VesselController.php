@@ -211,7 +211,7 @@ class VesselController extends Controller
                 'panama_nt' => $request->getPanamaNt(),
                 'suez_gt' => $request->getSuezGt(),
                 'suez_nt' => $request->getSuezNt(),
-                
+
             ];
             $vessel = $this->vesselService->update($formData, $vessel);
             $this->response['data'] = new VesselResource($vessel);

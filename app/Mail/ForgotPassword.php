@@ -12,20 +12,16 @@ class ForgotPassword extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /** @var PasswordReset */
-    protected $passwordReset;
-
     /** @var string */
     public $view;
-
-    /** @var string */
-    protected $url;
-
-    /** @var User */
-    protected $user;
-
     /** @var string */
     public $subject;
+    /** @var PasswordReset */
+    protected $passwordReset;
+    /** @var string */
+    protected $url;
+    /** @var User */
+    protected $user;
 
     /**
      * Create a new message instance.

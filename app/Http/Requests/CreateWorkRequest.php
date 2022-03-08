@@ -27,6 +27,7 @@ class CreateWorkRequest extends FormRequest
                 'date',
                 'date_format:d-M-Y',
             ],
+            'running_hours' => 'nullable',
             'instructions' => 'nullable',
             'remarks' => 'nullable',
         ];
@@ -40,6 +41,11 @@ class CreateWorkRequest extends FormRequest
     public function getLastDone()
     {
         return $this->input('last_done', null);
+    }
+
+    public function getRunningHours()
+    {
+        return $this->input('running_hours', null);
     }
 
     public function getInstructions()

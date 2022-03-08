@@ -27,8 +27,9 @@ class IntervalImport implements ToModel, WithHeadingRow, SkipsOnError, WithValid
         $unit = IntervalUnit::where('name', $row['unit'])->first();
 
         return new Interval([
-            'value' => $row['value'],
             'interval_unit_id' => $unit->getAttribute('id'),
+            'value' => $row['value'],
+            'name' => $row['value'] . ' ' . $unit->getAttribute('name'),
         ]);
     }
 

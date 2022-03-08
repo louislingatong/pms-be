@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Http\Resources\VesselOwnerResource;
-use App\Models\VesselDepartment;
 use App\Models\VesselOwner;
 
 class VesselOwnerService
@@ -50,7 +49,7 @@ class VesselOwnerService
         }
 
         $results = $query->skip($skip)
-            ->orderBy('id', 'DESC')
+            ->orderBy('id', 'ASC')
             ->paginate($limit);
 
         $urlParams = ['keyword' => $conditions['keyword'], 'limit' => $limit];

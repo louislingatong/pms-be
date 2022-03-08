@@ -20,8 +20,6 @@ class CreateMachineryRequest extends FormRequest
             ],
             'code_name' => 'required',
             'name' => 'required',
-            'model' => 'nullable',
-            'maker' => 'nullable',
         ];
     }
 
@@ -38,15 +36,5 @@ class CreateMachineryRequest extends FormRequest
     public function getName()
     {
         return $this->input('name', null);
-    }
-
-    public function getModel()
-    {
-        return $this->input('model', null);
-    }
-
-    public function getMaker()
-    {
-        return $this->input('maker', null);
     }
 }

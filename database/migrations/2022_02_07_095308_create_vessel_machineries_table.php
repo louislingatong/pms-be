@@ -19,6 +19,8 @@ class CreateVesselMachineriesTable extends Migration
             $table->unsignedBigInteger('vessel_id');
             $table->unsignedBigInteger('machinery_id');
             $table->unsignedBigInteger('incharge_rank_id');
+            $table->unsignedBigInteger('machinery_model_id')->nullable();
+            $table->unsignedBigInteger('machinery_maker_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
@@ -33,6 +35,14 @@ class CreateVesselMachineriesTable extends Migration
             $table->foreign('incharge_rank_id')
                 ->references('id')
                 ->on('ranks')
+                ->onDelete('cascade');
+            $table->foreign('machinery_model_id')
+                ->references('id')
+                ->on('machinery_models')
+                ->onDelete('cascade');
+            $table->foreign('machinery_maker_id')
+                ->references('id')
+                ->on('machinery_makers')
                 ->onDelete('cascade');
         });
     }

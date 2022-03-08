@@ -7,6 +7,8 @@ use App\Http\Resources\VesselMachineryResource;
 use App\Models\Interval;
 use App\Models\IntervalUnit;
 use App\Models\Machinery;
+use App\Models\MachineryMaker;
+use App\Models\MachineryModel;
 use App\Models\MachinerySubCategory;
 use App\Models\Rank;
 use App\Models\Vessel;
@@ -15,7 +17,6 @@ use App\Models\VesselMachinerySubCategory;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class VesselMachineryService
 {
@@ -69,7 +70,7 @@ class VesselMachineryService
         }
 
         $results = $query->skip($skip)
-            ->orderBy('id', 'DESC')
+            ->orderBy('id', 'ASC')
             ->paginate($limit);
 
         $urlParams = ['keyword' => $conditions['keyword'], 'limit' => $limit];
@@ -95,10 +96,24 @@ class VesselMachineryService
             $machinery = Machinery::whereName($params['machinery'])->first();
             /** @var Rank $inchargeRank */
             $inchargeRank = Rank::whereName($params['incharge_rank'])->first();
+            if (isset($params['model'])) {
+                $machineryModel = $this->findOrCreateModelByName($params['model']);
+                $params['machinery_model_id'] = $machineryModel->getAttribute('id');
+            }
+            if (isset($params['maker'])) {
+                $machineryMaker = $this->findOrCreateMakerByName($params['maker']);
+                $params['machinery_maker_id'] = $machineryMaker->getAttribute('id');
+            }
             $vesselMachinery = $this->vesselMachinery->create([
                 'vessel_id' => $vessel->getAttribute('id'),
                 'machinery_id' => $machinery->getAttribute('id'),
                 'incharge_rank_id' => $inchargeRank->getAttribute('id'),
+                'machinery_model_id' => (isset($machineryModel) && $machineryModel instanceof MachineryModel)
+                    ? $machineryModel->getAttribute('id')
+                    : null,
+                'machinery_maker_id' => (isset($machineryMaker) && $machineryMaker instanceof MachineryMaker)
+                    ? $machineryMaker->getAttribute('id')
+                    : null,
                 'installed_date' => $params['installed_date'],
             ]);
 
@@ -110,6 +125,30 @@ class VesselMachineryService
         }
 
         return $vesselMachinery;
+    }
+
+    /**
+     * Retrieve/Create the machinery model
+     *
+     * @param string $name
+     * @return MachineryModel
+     * @throws
+     */
+    public function findOrCreateModelByName(string $name): MachineryModel
+    {
+        return MachineryModel::firstOrCreate(['name' => $name]);
+    }
+
+    /**
+     * Retrieve/Create the machinery maker
+     *
+     * @param string $name
+     * @return MachineryMaker
+     * @throws
+     */
+    public function findOrCreateMakerByName(string $name): MachineryMaker
+    {
+        return MachineryMaker::firstOrCreate(['name' => $name]);
     }
 
     /**
@@ -128,10 +167,24 @@ class VesselMachineryService
         $machinery = Machinery::whereName($params['machinery'])->first();
         /** @var Rank $inchargeRank */
         $inchargeRank = Rank::whereName($params['incharge_rank'])->first();
+        if ($params['model']) {
+            $machineryModel = $this->findOrCreateModelByName($params['model']);
+            $params['machinery_model_id'] = $machineryModel->getAttribute('id');
+        }
+        if ($params['maker']) {
+            $machineryMaker = $this->findOrCreateMakerByName($params['model']);
+            $params['machinery_maker_id'] = $machineryMaker->getAttribute('id');
+        }
         $vesselMachinery->update([
             'vessel_id' => $vessel->getAttribute('id'),
             'machinery_id' => $machinery->getAttribute('id'),
             'incharge_rank_id' => $inchargeRank->getAttribute('id'),
+            'machinery_model_id' => (isset($machineryModel) && $machineryModel instanceof MachineryModel)
+                ? $machineryModel->getAttribute('id')
+                : null,
+            'machinery_maker_id' => (isset($machineryMaker) && $machineryMaker instanceof MachineryMaker)
+                ? $machineryMaker->getAttribute('id')
+                : null,
             'installed_date' => $params['installed_date'],
         ]);
         return $vesselMachinery;

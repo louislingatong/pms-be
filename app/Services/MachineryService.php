@@ -5,8 +5,6 @@ namespace App\Services;
 use App\Exceptions\MachineryNotFoundException;
 use App\Http\Resources\MachineryResource;
 use App\Models\Machinery;
-use App\Models\MachineryMaker;
-use App\Models\MachineryModel;
 use App\Models\MachinerySubCategory;
 use App\Models\VesselDepartment;
 use Exception;
@@ -17,28 +15,14 @@ class MachineryService
     /** @var Machinery $machinery */
     protected $machinery;
 
-    /** @var MachineryModel $model */
-    protected $model;
-
-    /** @var MachineryMaker $maker */
-    protected $maker;
-
     /**
      * MachineryService constructor.
      *
      * @param Machinery $machinery
-     * @param MachineryModel $model
-     * @param MachineryMaker $maker
      */
-    public function __construct(
-        Machinery $machinery,
-        MachineryModel $model,
-        MachineryMaker $maker
-    )
+    public function __construct(Machinery $machinery)
     {
         $this->machinery = $machinery;
-        $this->model = $model;
-        $this->maker = $maker;
     }
 
     /**
@@ -96,22 +80,12 @@ class MachineryService
         DB::beginTransaction();
 
         try {
-            if (isset($params['model'])) {
-                $machineryModel = $this->findOrCreateModelByName($params['model']);
-                $params['machinery_model_id'] = $machineryModel->getAttribute('id');
-            }
-            if (isset($params['maker'])) {
-                $machineryMaker = $this->findOrCreateMakerByName($params['maker']);
-                $params['machinery_maker_id'] = $machineryMaker->getAttribute('id');
-            }
             /** @var VesselDepartment $department */
             $department = VesselDepartment::whereName($params['vessel_department'])->first();
             $machinery = $this->machinery->create([
                 'vessel_department_id' => $department->getAttribute('id'),
                 'code_name' => $params['code_name'],
                 'name' => $params['name'],
-                'model' => $params['model'],
-                'maker' => $params['maker'],
             ]);
 
             DB::commit();
@@ -137,22 +111,12 @@ class MachineryService
         DB::beginTransaction();
 
         try {
-            if ($params['model']) {
-                $machineryModel = $this->findOrCreateModelByName($params['model']);
-                $params['machinery_model_id'] = $machineryModel->getAttribute('id');
-            }
-            if ($params['maker']) {
-                $machineryMaker = $this->findOrCreateMakerByName($params['model']);
-                $params['machinery_maker_id'] = $machineryMaker->getAttribute('id');
-            }
             /** @var VesselDepartment $department */
             $department = VesselDepartment::whereName($params['vessel_department'])->first();
             $machinery->update([
                 'vessel_department_id' => $department->getAttribute('id'),
                 'code_name' => $params['code_name'],
                 'name' => $params['name'],
-                'model' => $params['model'],
-                'maker' => $params['maker'],
             ]);
 
             DB::commit();
@@ -193,29 +157,5 @@ class MachineryService
     {
         $machinery->subCategories()->save(new MachinerySubCategory($params));
         return $machinery;
-    }
-
-    /**
-     * Retrieve/Create the machinery model
-     *
-     * @param string $name
-     * @return MachineryModel
-     * @throws
-     */
-    public function findOrCreateModelByName(string $name): MachineryModel
-    {
-        return $this->model->firstOrCreate(['name' => $name]);
-    }
-
-    /**
-     * Retrieve/Create the machinery maker
-     *
-     * @param string $name
-     * @return MachineryMaker
-     * @throws
-     */
-    public function findOrCreateMakerByName(string $name): MachineryMaker
-    {
-        return $this->maker->firstOrCreate(['name' => $name]);
     }
 }
