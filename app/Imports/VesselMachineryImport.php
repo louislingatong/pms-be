@@ -39,11 +39,11 @@ class VesselMachineryImport implements ToModel, WithHeadingRow, SkipsOnError, Wi
         /** @var Rank $inchargeRank */
         $inchargeRank = Rank::where('name', $row['incharge_rank'])->first();
 
-        if (isset($row['model'])) {
+        if ($row['model']) {
             /** @var MachineryModel $machineryModel */
             $machineryModel = MachineryModel::findOrCreateModelByName($row['model']);
         }
-        if (isset($row['maker'])) {
+        if ($row['maker']) {
             /** @var MachineryMaker $machineryMaker */
             $machineryMaker = MachineryMaker::findOrCreateMakerByName($row['maker']);
         }
