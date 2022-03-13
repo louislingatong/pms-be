@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateVesselMachinerySubCategoryRequest;
+use App\Http\Requests\ImportRequest;
 use App\Http\Requests\SearchMachinerySubCategoryRequest;
 use App\Http\Requests\UpdateVesselMachinerySubCategoryRequest;
 use App\Http\Resources\VesselMachinerySubCategoryResource;
+use App\Imports\VesselMachinerySubCategoryImport;
 use App\Models\VesselMachinerySubCategory;
 use App\Services\VesselMachinerySubCategoryService;
 use Exception;
@@ -156,6 +158,35 @@ class VesselMachinerySubCategoryController extends Controller
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),
+                'code' => 500,
+            ];
+        }
+
+        return response()->json($this->response, $this->response['code']);
+    }
+
+    /**
+     * Import vessel machinery sub category
+     *
+     * @param ImportRequest $request
+     * @return JsonResponse
+     * @throws
+     */
+    public function import(ImportRequest $request): JsonResponse
+    {
+        $import = new VesselMachinerySubCategoryImport();
+        $import->import($request->getFile());
+
+        if ($import->failures()->isNotEmpty()) {
+            $this->response = [
+                'error' => $import->failures(),
+                'code' => 422,
+            ];
+        }
+
+        if ($import->errors()->isNotEmpty()) {
+            $this->response = [
+                'error' => $import->errors(),
                 'code' => 500,
             ];
         }
