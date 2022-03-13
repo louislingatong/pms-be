@@ -13,9 +13,9 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class IntervalImport implements ToModel, WithHeadingRow, SkipsOnError, WithValidation, SkipsOnFailure
+class IntervalImport implements ToModel, WithHeadingRow, WithValidation
 {
-    use Importable, SkipsErrors, SkipsFailures;
+    use Importable;
 
     /**
      * @param array $row

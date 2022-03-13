@@ -14,9 +14,9 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class MachineryImport implements ToCollection, WithHeadingRow, SkipsOnError, WithValidation, SkipsOnFailure
+class MachineryImport implements ToCollection, WithHeadingRow, WithValidation
 {
-    use Importable, SkipsErrors, SkipsFailures;
+    use Importable;
 
     /**
      * @param Collection $collection

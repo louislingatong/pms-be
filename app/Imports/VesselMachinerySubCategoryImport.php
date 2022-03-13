@@ -10,17 +10,13 @@ use App\Models\VesselMachinery;
 use App\Models\VesselMachinerySubCategory;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\Importable;
-use Maatwebsite\Excel\Concerns\SkipsErrors;
-use Maatwebsite\Excel\Concerns\SkipsFailures;
-use Maatwebsite\Excel\Concerns\SkipsOnError;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, SkipsOnError, WithValidation, SkipsOnFailure
+class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithValidation
 {
-    use Importable, SkipsErrors, SkipsFailures;
+    use Importable;
 
     /**
      * @param array $row
