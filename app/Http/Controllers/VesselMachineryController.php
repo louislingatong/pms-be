@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateVesselMachineryRequest;
 use App\Http\Requests\EditVesselMachinerySubCategoryRequest;
+use App\Http\Requests\ImportRequest;
 use App\Http\Requests\SearchVesselMachineryRequest;
 use App\Http\Requests\UpdateVesselMachineryRequest;
 use App\Http\Resources\VesselMachineryResource;
+use App\Imports\VesselMachineryImport;
 use App\Models\VesselMachinery;
 use App\Services\VesselMachineryService;
 use Carbon\Carbon;
@@ -187,6 +189,35 @@ class VesselMachineryController extends Controller
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),
+                'code' => 500,
+            ];
+        }
+
+        return response()->json($this->response, $this->response['code']);
+    }
+
+    /**
+     * Import vessel machinery
+     *
+     * @param ImportRequest $request
+     * @return JsonResponse
+     * @throws
+     */
+    public function import(ImportRequest $request): JsonResponse
+    {
+        $import = new VesselMachineryImport();
+        $import->import($request->getFile());
+
+        if ($import->failures()->isNotEmpty()) {
+            $this->response = [
+                'error' => $import->failures(),
+                'code' => 422,
+            ];
+        }
+
+        if ($import->errors()->isNotEmpty()) {
+            $this->response = [
+                'error' => $import->errors(),
                 'code' => 500,
             ];
         }

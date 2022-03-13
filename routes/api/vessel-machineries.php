@@ -9,5 +9,6 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::put('{vesselMachinery}', 'VesselMachineryController@update');
     Route::delete('{vesselMachinery}', 'VesselMachineryController@delete');
 
+    Route::post('/import', 'VesselMachineryController@import');
     Route::put('{vesselMachinery}/edit-machinery-sub-categories', 'VesselMachineryController@editMachinerySubCategories');
 });
