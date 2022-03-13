@@ -13,9 +13,9 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class MachinerySubCategoryImport implements ToModel, WithHeadingRow, WithValidation
+class MachinerySubCategoryImport implements ToModel, WithHeadingRow, SkipsOnError, WithValidation, SkipsOnFailure
 {
-    use Importable;
+    use Importable, SkipsErrors, SkipsFailures;
 
     /**
      * @param array $row
