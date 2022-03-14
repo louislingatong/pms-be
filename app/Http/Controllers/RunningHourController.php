@@ -12,6 +12,7 @@ use App\Services\RunningHourService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Maatwebsite\Excel\Validators\ValidationException;
 
 class RunningHourController extends Controller
 {
@@ -107,12 +108,20 @@ class RunningHourController extends Controller
         try {
             $import = new RunningHoursImport();
             $import->import($request->getFile());
-        } catch (Exception $e) {
-            dd($e);
-            $this->response = [
-                'error' => $e->getMessage(),
-                'code' => 500,
-            ];
+        } catch (ValidationException $e) {
+            if (!empty($e->failures())) {
+                $this->response = [
+                    'error' => $e->failures(),
+                    'code' => 422,
+                ];
+            }
+
+            if (!empty($e->errors())) {
+                $this->response = [
+                    'error' => $e->errors(),
+                    'code' => 500,
+                ];
+            }
         }
 
         return response()->json($this->response, $this->response['code']);
