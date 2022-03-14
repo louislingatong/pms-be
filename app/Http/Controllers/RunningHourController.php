@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateRunningHourRequest;
+use App\Http\Requests\ImportRequest;
 use App\Http\Requests\SearchRunningHourRequest;
 use App\Http\Resources\RunningHourResource;
+use App\Imports\RunningHoursImport;
 use App\Models\User;
 use App\Services\RunningHourService;
 use Carbon\Carbon;
@@ -84,6 +86,29 @@ class RunningHourController extends Controller
             $runningHour = $this->runningHourService->create($formData);
             $this->response['data'] = new RunningHourResource($runningHour);
         } catch (Exception $e) {
+            $this->response = [
+                'error' => $e->getMessage(),
+                'code' => 500,
+            ];
+        }
+
+        return response()->json($this->response, $this->response['code']);
+    }
+
+    /**
+     * Import vessel machinery running hours
+     *
+     * @param ImportRequest $request
+     * @return JsonResponse
+     * @throws
+     */
+    public function import(ImportRequest $request): JsonResponse
+    {
+        try {
+            $import = new RunningHoursImport();
+            $import->import($request->getFile());
+        } catch (Exception $e) {
+            dd($e);
             $this->response = [
                 'error' => $e->getMessage(),
                 'code' => 500,
