@@ -13,6 +13,7 @@ use App\Models\Machinery;
 use App\Services\MachineryService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Maatwebsite\Excel\Validators\ValidationException;
 
 class MachineryController extends Controller
 {
@@ -169,21 +170,23 @@ class MachineryController extends Controller
      */
     public function import(ImportRequest $request): JsonResponse
     {
-        $import = new MachineryImport;
-        $import->import($request->getFile());
+        try {
+            $import = new MachineryImport;
+            $import->import($request->getFile());
+        } catch (ValidationException $e) {
+            if (!empty($e->failures())) {
+                $this->response = [
+                    'error' => $e->failures(),
+                    'code' => 422,
+                ];
+            }
 
-        if ($import->failures()->isNotEmpty()) {
-            $this->response = [
-                'error' => $import->failures(),
-                'code' => 422,
-            ];
-        }
-
-        if ($import->errors()->isNotEmpty()) {
-            $this->response = [
-                'error' => $import->errors(),
-                'code' => 500,
-            ];
+            if (!empty($e->errors())) {
+                $this->response = [
+                    'error' => $e->errors(),
+                    'code' => 500,
+                ];
+            }
         }
 
         return response()->json($this->response, $this->response['code']);

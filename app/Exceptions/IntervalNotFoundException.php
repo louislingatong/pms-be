@@ -10,7 +10,7 @@ class IntervalNotFoundException extends Exception
     public $errorType = 'interval_not_found';
 
     /**
-     * VesselNotFoundException constructor.
+     * IntervalNotFoundException constructor.
      * @param string $message
      */
     public function __construct($message = 'Unable to retrieve interval.')

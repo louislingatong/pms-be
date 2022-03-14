@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Exceptions\VesselMachineryNotFoundException;
 use App\Models\Interval;
 use App\Models\IntervalUnit;
 use App\Models\MachinerySubCategory;
@@ -10,21 +11,18 @@ use App\Models\VesselMachinery;
 use App\Models\VesselMachinerySubCategory;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\Importable;
-use Maatwebsite\Excel\Concerns\SkipsErrors;
-use Maatwebsite\Excel\Concerns\SkipsFailures;
-use Maatwebsite\Excel\Concerns\SkipsOnError;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, SkipsOnError, WithValidation, SkipsOnFailure
+class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithValidation
 {
-    use Importable, SkipsErrors, SkipsFailures;
+    use Importable;
 
     /**
      * @param array $row
      * @return VesselMachinerySubCategory
+     * @throws
      */
     public function model(array $row): VesselMachinerySubCategory
     {
@@ -34,6 +32,10 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, Skips
         })->whereHas('machinery', function ($q) use ($row) {
             $q->where('name', '=', $row['machinery']);
         })->first();
+
+        if (!($vesselMachinery instanceof VesselMachinery)) {
+            throw new VesselMachineryNotFoundException();
+        }
 
         /** @var Interval $interval */
         $interval = Interval::where('name', $row['interval'])->first();

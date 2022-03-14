@@ -10,7 +10,7 @@ class SubCategoryNotFoundException extends Exception
     public $errorType = 'sub_category_not_found';
 
     /**
-     * VesselNotFoundException constructor.
+     * SubCategoryNotFoundException constructor.
      * @param string $message
      */
     public function __construct($message = 'Unable to retrieve Sub Category.')

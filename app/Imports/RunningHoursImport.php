@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Exceptions\VesselMachineryNotFoundException;
 use App\Models\RunningHour;
 use App\Models\User;
 use App\Models\VesselMachinery;
@@ -18,6 +19,7 @@ class RunningHoursImport implements ToModel, WithHeadingRow, WithValidation
     /**
      * @param array $row
      * @return RunningHour
+     * @throws
      */
     public function model(array $row): RunningHour
     {
@@ -27,6 +29,10 @@ class RunningHoursImport implements ToModel, WithHeadingRow, WithValidation
         })->whereHas('machinery', function ($q) use ($row) {
             $q->where('name', '=', $row['machinery']);
         })->first();
+
+        if (!($vesselMachinery instanceof VesselMachinery)) {
+            throw new VesselMachineryNotFoundException();
+        }
 
         $updatingDate = Carbon::create($row['updating_date']);
 

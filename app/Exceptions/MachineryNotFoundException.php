@@ -10,7 +10,7 @@ class MachineryNotFoundException extends Exception
     public $errorType = 'machinery_not_found';
 
     /**
-     * VesselNotFoundException constructor.
+     * MachineryNotFoundException constructor.
      * @param string $message
      */
     public function __construct($message = 'Unable to retrieve machinery.')

@@ -14,6 +14,7 @@ use App\Services\VesselMachineryService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Maatwebsite\Excel\Validators\ValidationException;
 
 class VesselMachineryController extends Controller
 {
@@ -205,21 +206,23 @@ class VesselMachineryController extends Controller
      */
     public function import(ImportRequest $request): JsonResponse
     {
-        $import = new VesselMachineryImport();
-        $import->import($request->getFile());
+        try {
+            $import = new VesselMachineryImport();
+            $import->import($request->getFile());
+        } catch (ValidationException $e) {
+            if (!empty($e->failures())) {
+                $this->response = [
+                    'error' => $e->failures(),
+                    'code' => 422,
+                ];
+            }
 
-        if ($import->failures()->isNotEmpty()) {
-            $this->response = [
-                'error' => $import->failures(),
-                'code' => 422,
-            ];
-        }
-
-        if ($import->errors()->isNotEmpty()) {
-            $this->response = [
-                'error' => $import->errors(),
-                'code' => 500,
-            ];
+            if (!empty($e->errors())) {
+                $this->response = [
+                    'error' => $e->errors(),
+                    'code' => 500,
+                ];
+            }
         }
 
         return response()->json($this->response, $this->response['code']);

@@ -6,17 +6,13 @@ use App\Models\Machinery;
 use App\Models\VesselDepartment;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Importable;
-use Maatwebsite\Excel\Concerns\SkipsErrors;
-use Maatwebsite\Excel\Concerns\SkipsFailures;
-use Maatwebsite\Excel\Concerns\SkipsOnError;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class MachineryImport implements ToCollection, WithHeadingRow, SkipsOnError, WithValidation, SkipsOnFailure
+class MachineryImport implements ToCollection, WithHeadingRow, WithValidation
 {
-    use Importable, SkipsErrors, SkipsFailures;
+    use Importable;
 
     /**
      * @param Collection $collection
@@ -43,7 +39,10 @@ class MachineryImport implements ToCollection, WithHeadingRow, SkipsOnError, Wit
     public function rules(): array
     {
         return [
-            '*.department' => ['required', 'exists:vessel_departments,name']
+            '*.department' => [
+                'required',
+                'exists:vessel_departments,name',
+            ]
         ];
     }
 }
