@@ -17,7 +17,7 @@ class UpdateVesselMachinerySubCategoryRequest extends FormRequest
             'code' => 'required',
             'description' => 'nullable',
             'interval' => [
-                'required',
+                'nullable',
                 'exists:intervals,name',
             ],
             'vessel_machinery_id' => [
