@@ -16,6 +16,7 @@ use App\Models\VesselMachinery;
 use App\Models\VesselMachinerySubCategory;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class VesselMachineryService
@@ -220,39 +221,49 @@ class VesselMachineryService
 
         try {
             $newVesselMachinerySubCategories = [];
-            foreach ($params['vessel_machinery_sub_categories'] as $subCategory) {
-                /** @var Interval $interval */
-                $interval = Interval::whereName($subCategory['interval'])->first();
+            $removeVesselMachinerySubCategories = [];
+            if (is_array($params['vessel_machinery_sub_categories'])) {
+                foreach ($params['vessel_machinery_sub_categories'] as $subCategory) {
+                    if (!isset($subCategory['code'])
+                        && !isset($subCategory['description'])
+                        && !isset($subCategory['interval'])) {
+                        $removeVesselMachinerySubCategories[] = $subCategory['machinery_sub_category_id'];
+                        continue;
+                    }
+                    /** @var Interval $interval */
+                    $interval = Interval::whereName($subCategory['interval'])->first();
 
-                $dueDate = $this->getDueDate($vesselMachinery->getAttribute('installed_date'), $interval);
+                    $dueDate = $this->getDueDate($vesselMachinery->getAttribute('installed_date'), $interval);
 
-                /** @var MachinerySubCategory $machinerySubCategory */
-                $machinerySubCategory = MachinerySubCategory::find($subCategory['machinery_sub_category_id']);
-                if ($subCategory['description']) {
-                    $description = $machinerySubCategory
-                        ->descriptions()
-                        ->firstOrCreate([
-                            'name' => $subCategory['description'],
+                    /** @var MachinerySubCategory $machinerySubCategory */
+                    $machinerySubCategory = MachinerySubCategory::find($subCategory['machinery_sub_category_id']);
+                    if ($subCategory['description']) {
+                        $description = $machinerySubCategory
+                            ->descriptions()
+                            ->firstOrCreate([
+                                'name' => $subCategory['description'],
+                            ]);
+                    }
+
+                    /** @var VesselMachinerySubCategory $vesselMachinerySubCategory */
+                    $vesselMachinerySubCategory = $vesselMachinery->subCategories()
+                        ->whereHas('subCategory', function ($q) use ($machinerySubCategory) {
+                            $q->whereId($machinerySubCategory->getAttribute('id'));
+                        })
+                        ->first();
+
+                    if ($vesselMachinerySubCategory instanceof VesselMachinerySubCategory) {
+                        $vesselMachinerySubCategory->update([
+                            'code' => $subCategory['code'],
+                            'due_date' => $dueDate,
+                            'interval_id' => $interval->getAttribute('id'),
+                            'machinery_sub_category_description_id' => isset($description)
+                                ? $description->getAttribute('id')
+                                : null,
                         ]);
-                }
+                        continue;
+                    }
 
-                /** @var VesselMachinerySubCategory $vesselMachinerySubCategory */
-                $vesselMachinerySubCategory = $vesselMachinery->subCategories()
-                    ->whereHas('subCategory', function ($q) use ($machinerySubCategory) {
-                        $q->whereId($machinerySubCategory->getAttribute('id'));
-                    })
-                    ->first();
-
-                if ($vesselMachinerySubCategory instanceof VesselMachinerySubCategory) {
-                    $vesselMachinerySubCategory->update([
-                        'code' => $subCategory['code'],
-                        'due_date' => $dueDate,
-                        'interval_id' => $interval->getAttribute('id'),
-                        'machinery_sub_category_description_id' => isset($description)
-                            ? $description->getAttribute('id')
-                            : null,
-                    ]);
-                } else {
                     $newVesselMachinerySubCategories[] = new VesselMachinerySubCategory([
                         'code' => $subCategory['code'],
                         'due_date' => $dueDate,
@@ -267,6 +278,10 @@ class VesselMachineryService
 
             if (!empty($newVesselMachinerySubCategories)) {
                 $vesselMachinery->subCategories()->saveMany($newVesselMachinerySubCategories);
+            }
+
+            if (!empty($removeVesselMachinerySubCategories)) {
+                $vesselMachinery->subCategories()->whereIn('id', $removeVesselMachinerySubCategories)->delete();
             }
 
             DB::commit();

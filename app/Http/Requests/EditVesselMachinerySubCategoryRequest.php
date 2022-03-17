@@ -18,10 +18,10 @@ class EditVesselMachinerySubCategoryRequest extends FormRequest
                 'required',
                 'array',
             ],
-            'vessel_machinery_sub_categories.*.code' => 'required',
+            'vessel_machinery_sub_categories.*.code' => 'nullable',
             'vessel_machinery_sub_categories.*.description' => 'nullable',
             'vessel_machinery_sub_categories.*.interval' => [
-                'required',
+                'nullable',
                 'exists:intervals,name',
             ],
             'vessel_machinery_sub_categories.*.machinery_sub_category_id' => [
