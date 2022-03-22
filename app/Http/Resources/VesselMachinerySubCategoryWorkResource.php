@@ -37,7 +37,7 @@ class VesselMachinerySubCategoryWorkResource extends JsonResource
     }
 
     /**
-     * Get the job status
+     * Get the work status
      *
      * @param string $dueDate
      * @return string

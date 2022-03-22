@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\WorkExport;
+use App\Exports\WorkHistoryExport;
 use App\Http\Requests\CreateWorkRequest;
+use App\Http\Requests\ExportWorkRequest;
 use App\Http\Requests\SearchWorkRequest;
 use App\Http\Resources\VesselMachinerySubCategoryWorkResource;
 use App\Models\User;
+use App\Models\VesselMachinerySubCategory;
 use App\Services\WorkService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class WorkController extends Controller
 {
@@ -83,7 +89,8 @@ class WorkController extends Controller
                 'running_hours' => $request->getRunningHours(),
                 'instructions' => $request->getInstructions(),
                 'remarks' => $request->getRemarks(),
-                'creator_id' => $creator->getAttribute('id')
+                'creator_id' => $creator->getAttribute('id'),
+                'file' => $request->getFile(),
             ];
             $works = $this->workService->create($formData);
             $this->response['data'] = VesselMachinerySubCategoryWorkResource::collection($works);
@@ -95,5 +102,39 @@ class WorkController extends Controller
         }
 
         return response()->json($this->response, $this->response['code']);
+    }
+
+    /**
+     * Export work
+     *
+     * @param ExportWorkRequest $request
+     * @return BinaryFileResponse
+     */
+    public function export(ExportWorkRequest $request): BinaryFileResponse
+    {
+        $request->validated();
+
+        $conditions = [
+            'vessel' => $request->getVessel(),
+            'department' => $request->getDepartment(),
+            'machinery' => $request->getMachinery(),
+            'status' => $request->getStatus(),
+            'keyword' => $request->getKeyword(),
+        ];
+
+        $results = $this->workService->export($conditions);
+
+        return Excel::download(new WorkExport($results->toArray()), 'Works.xls');
+    }
+
+    /**
+     * Export work history
+     *
+     * @param VesselMachinerySubCategory $vesselMachinerySubCategory
+     * @return BinaryFileResponse
+     */
+    public function exportWorkHistory(VesselMachinerySubCategory $vesselMachinerySubCategory): BinaryFileResponse
+    {
+        return Excel::download(new WorkHistoryExport($vesselMachinerySubCategory), 'Work History.xls');
     }
 }

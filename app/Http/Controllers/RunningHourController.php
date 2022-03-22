@@ -2,17 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\RunningHoursExport;
+use App\Exports\RunningHoursHistoryExport;
 use App\Http\Requests\CreateRunningHourRequest;
+use App\Http\Requests\ExportRunningHourRequest;
 use App\Http\Requests\ImportRequest;
 use App\Http\Requests\SearchRunningHourRequest;
 use App\Http\Resources\RunningHourResource;
 use App\Imports\RunningHoursImport;
 use App\Models\User;
+use App\Models\VesselMachinery;
 use App\Services\RunningHourService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Validators\ValidationException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class RunningHourController extends Controller
 {
@@ -125,5 +131,36 @@ class RunningHourController extends Controller
         }
 
         return response()->json($this->response, $this->response['code']);
+    }
+
+    /**
+     * Export running hours
+     *
+     * @param ExportRunningHourRequest $request
+     * @return BinaryFileResponse
+     */
+    public function export(ExportRunningHourRequest $request): BinaryFileResponse
+    {
+        $request->validated();
+
+        $conditions = [
+            'vessel' => $request->getVessel(),
+            'department' => $request->getDepartment(),
+            'keyword' => $request->getKeyword(),
+        ];
+
+        $results = $this->runningHourService->export($conditions);
+        return Excel::download(new RunningHoursExport($results->toArray()), 'Running Hours.xls');
+    }
+
+    /**
+     * Export running hours history
+     *
+     * @param VesselMachinery $vesselMachinery
+     * @return BinaryFileResponse
+     */
+    public function exportRunningHoursHistory(VesselMachinery $vesselMachinery): BinaryFileResponse
+    {
+        return Excel::download(new RunningHoursHistoryExport($vesselMachinery), 'Running Hours History.xls');
     }
 }

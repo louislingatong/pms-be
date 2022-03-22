@@ -21,6 +21,7 @@ class Work extends Model
         'running_hours',
         'instructions',
         'remarks',
+        'updating_date',
         'creator_id',
     ];
 
@@ -42,5 +43,15 @@ class Work extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    /**
+     * Gets the work file.
+     *
+     * @return mixed
+     */
+    public function file()
+    {
+        return $this->morphOne(WorkFile::class, 'imageable');
     }
 }

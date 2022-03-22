@@ -30,6 +30,10 @@ class CreateWorkRequest extends FormRequest
             'running_hours' => 'nullable',
             'instructions' => 'nullable',
             'remarks' => 'nullable',
+            'file' => [
+                'nullable',
+                'max:10000',
+            ],
         ];
     }
 
@@ -56,5 +60,10 @@ class CreateWorkRequest extends FormRequest
     public function getRemarks()
     {
         return $this->input('remarks', null);
+    }
+
+    public function getFile()
+    {
+        return $this->file('file', null);
     }
 }

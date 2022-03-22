@@ -76,7 +76,7 @@ class VesselMachinerySubCategory extends Model
     public function currentWork(): HasOne
     {
         return $this->HasOne(Work::class, 'vessel_machinery_sub_category_id')
-            ->orderBy('id', 'ASC');
+            ->orderBy('id', 'DESC');
     }
 
     /**

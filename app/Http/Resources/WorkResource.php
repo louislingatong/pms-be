@@ -30,6 +30,7 @@ class WorkResource extends JsonResource
             'remarks' => $work->getAttribute('remarks'),
             'created_at' => Carbon::create($work->getAttribute('created_at'))->format('d-M-Y'),
             'creator' => $creator->getAttribute('full_name'),
+            'file' => $work->file
         ];
     }
 }

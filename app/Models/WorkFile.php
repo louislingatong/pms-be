@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class WorkFile extends Model
+{
+    /**
+     * Get the owning imageable model.
+     *
+     * @return mixed
+     */
+    public function imageable()
+    {
+        return $this->morphTo();
+    }
+}

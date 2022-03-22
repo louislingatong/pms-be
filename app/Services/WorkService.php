@@ -7,13 +7,20 @@ use App\Models\Interval;
 use App\Models\IntervalUnit;
 use App\Models\VesselMachinerySubCategory;
 use App\Models\Work;
+use App\Models\WorkFile;
+use App\Traits\Uploadable;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class WorkService
 {
+    use Uploadable;
+
     /** @var VesselMachinerySubCategory $vesselMachinerySubCategory */
     protected $vesselMachinerySubCategory;
 
@@ -104,6 +111,12 @@ class WorkService
         $updatedVesselMachinerySubCategory = collect([]);
 
         try {
+            if (isset($params['file'])) {
+                $fileUrl = $this->uploadOne($params['file'], 'files');
+                $workFile = new WorkFile();
+                $workFile->setAttribute('path', $fileUrl);
+            }
+
             foreach ($params['vessel_machinery_sub_category_Ids'] as $id) {
                 /** @var Work $work */
                 $work = $this->work->create([
@@ -114,6 +127,10 @@ class WorkService
                     'remarks' => $params['remarks'],
                     'creator_id' => $params['creator_id'],
                 ]);
+
+                if (isset($workFile)) {
+                    $work->file()->save($workFile);
+                }
 
                 /** @var VesselMachinerySubCategory $vesselMachinerySubCategory */
                 $vesselMachinerySubCategory = $work->vesselMachinerySubCategory;
@@ -138,6 +155,42 @@ class WorkService
         }
 
         return $updatedVesselMachinerySubCategory;
+    }
+
+    /**
+     * List of vessel sub category with job by conditions
+     *
+     * @param array $conditions
+     * @return Collection
+     * @throws
+     */
+    public function export(array $conditions): Collection
+    {
+        $query = $this->vesselMachinerySubCategory->whereHas('vesselMachinery.vessel', function ($q) use ($conditions) {
+            $q->where('name', '=', $conditions['vessel']);
+        });
+
+        if ($conditions['department']) {
+            $query = $query->whereHas('vesselMachinery.machinery.department', function ($q) use ($conditions) {
+                $q->where('name', '=', $conditions['department']);
+            });
+        }
+
+        if ($conditions['machinery']) {
+            $query = $query->whereHas('vesselMachinery.machinery', function ($q) use ($conditions) {
+                $q->where('name', '=', $conditions['machinery']);
+            });
+        }
+
+        if ($conditions['status']) {
+            $query = $query->searchByStatus($conditions['status']);
+        }
+
+        if ($conditions['keyword']) {
+            $query = $query->search($conditions['keyword']);
+        }
+
+        return $query->with('interval', 'vesselMachinery', 'subCategory', 'description', 'currentWork')->get();
     }
 
     /**

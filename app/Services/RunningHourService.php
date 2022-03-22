@@ -6,6 +6,8 @@ use App\Http\Resources\VesselMachineryRunningHourResource;
 use App\Models\RunningHour;
 use App\Models\VesselMachinery;
 use Exception;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class RunningHourService
@@ -98,5 +100,31 @@ class RunningHourService
         }
 
         return $runningHour;
+    }
+
+    /**
+     * List of vessel machinery with running hour by conditions
+     *
+     * @param array $conditions
+     * @return Collection
+     * @throws
+     */
+    public function export(array $conditions): Collection
+    {
+        $query = $this->vesselMachinery->whereHas('vessel', function ($q) use ($conditions) {
+            $q->where('name', '=', $conditions['vessel']);
+        });
+
+        if ($conditions['department']) {
+            $query = $query->whereHas('machinery.department', function ($q) use ($conditions) {
+                $q->where('name', '=', $conditions['department']);
+            });
+        }
+
+        if ($conditions['keyword']) {
+            $query = $query->search($conditions['keyword']);
+        }
+
+        return $query->with('machinery', 'currentRunningHour')->get();
     }
 }

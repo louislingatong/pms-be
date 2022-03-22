@@ -28,4 +28,6 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->count();
         return response()->json(['data' => $work]);
     });
+    Route::get('/export', 'WorkController@export');
+    Route::get('{vesselMachinerySubCategory}/export', 'WorkController@exportWorkHistory');
 });
