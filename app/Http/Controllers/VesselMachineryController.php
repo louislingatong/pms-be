@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\VesselMachineryExport;
 use App\Http\Requests\CreateVesselMachineryRequest;
 use App\Http\Requests\EditVesselMachinerySubCategoryRequest;
 use App\Http\Requests\ImportRequest;
@@ -14,7 +15,9 @@ use App\Services\VesselMachineryService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Validators\ValidationException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class VesselMachineryController extends Controller
 {
@@ -226,5 +229,16 @@ class VesselMachineryController extends Controller
         }
 
         return response()->json($this->response, $this->response['code']);
+    }
+
+    /**
+     * Export vessel machinery
+     *
+     * @param VesselMachinery $vesselMachinery
+     * @return BinaryFileResponse
+     */
+    public function exportVesselMachinery(VesselMachinery $vesselMachinery): BinaryFileResponse
+    {
+        return Excel::download(new VesselMachineryExport($vesselMachinery), 'Vessel Machinery.xls');
     }
 }

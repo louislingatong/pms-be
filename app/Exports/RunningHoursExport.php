@@ -2,16 +2,16 @@
 
 namespace App\Exports;
 
-use App\Models\User;
-use App\Models\VesselMachinery;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class RunningHoursExport implements FromArray, WithHeadings, WithMapping, ShouldAutoSize
+class RunningHoursExport implements FromArray, WithHeadings, WithMapping, WithEvents, ShouldAutoSize
 {
     protected $runningHours;
 
@@ -59,6 +59,30 @@ class RunningHoursExport implements FromArray, WithHeadings, WithMapping, Should
             $row['current_running_hour']['created_at']
                 ? Carbon::create($row['current_running_hour']['created_at'])->format('d-M-Y')
                 : '',
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function registerEvents(): array
+    {
+        $style = [
+            'font' => [
+                'bold' => true,
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'color' => [
+                    'argb' => 'FFA0A0A0',
+                ],
+            ],
+        ];
+
+        return [
+            AfterSheet::class => function(AfterSheet $event) use ($style) {
+                $event->sheet->getStyle('A1:E1')->applyFromArray($style);
+            }
         ];
     }
 }

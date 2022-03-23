@@ -67,32 +67,6 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
     }
 
     /**
-     * @return array
-     */
-    public function rules(): array
-    {
-        return [
-            '*.code' => 'required',
-            '*.vessel' => [
-                'required',
-                'exists:vessels,name'
-            ],
-            '*.machinery' => [
-                'required',
-                'exists:machineries,name'
-            ],
-            '*.interval' => [
-                'required',
-                'exists:intervals,name'
-            ],
-            '*.name' => [
-                'required',
-                'exists:machinery_sub_categories,name'
-            ],
-        ];
-    }
-
-    /**
      * Get the job due date
      *
      * @param string $date
@@ -123,5 +97,31 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
                 break;
         }
         return $dueDate;
+    }
+
+    /**
+     * @return array
+     */
+    public function rules(): array
+    {
+        return [
+            '*.code' => 'required',
+            '*.vessel' => [
+                'required',
+                'exists:vessels,name'
+            ],
+            '*.machinery' => [
+                'required',
+                'exists:machineries,name'
+            ],
+            '*.interval' => [
+                'required',
+                'exists:intervals,name'
+            ],
+            '*.name' => [
+                'required',
+                'exists:machinery_sub_categories,name'
+            ],
+        ];
     }
 }

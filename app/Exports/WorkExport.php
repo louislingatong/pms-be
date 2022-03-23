@@ -2,20 +2,16 @@
 
 namespace App\Exports;
 
-use App\Models\Interval;
-use App\Models\MachinerySubCategoryDescription;
-use App\Models\User;
-use App\Models\VesselMachinery;
-use App\Models\VesselMachinerySubCategory;
 use Carbon\Carbon;
-use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class WorkExport implements FromArray, WithHeadings, WithMapping, ShouldAutoSize
+class WorkExport implements FromArray, WithHeadings, WithMapping, WithEvents, ShouldAutoSize
 {
     protected $works;
 
@@ -73,6 +69,30 @@ class WorkExport implements FromArray, WithHeadings, WithMapping, ShouldAutoSize
             $this->getStatus($row['due_date']),
             $row['current_work']['instructions'] ?: '',
             $row['current_work']['remarks'] ?: '',
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function registerEvents(): array
+    {
+        $style = [
+            'font' => [
+                'bold' => true,
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'color' => [
+                    'argb' => 'FFA0A0A0',
+                ],
+            ],
+        ];
+
+        return [
+            AfterSheet::class => function(AfterSheet $event) use ($style) {
+                $event->sheet->getStyle('A1:K1')->applyFromArray($style);
+            }
         ];
     }
 

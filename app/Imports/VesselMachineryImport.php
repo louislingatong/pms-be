@@ -45,7 +45,7 @@ class VesselMachineryImport implements ToModel, WithHeadingRow, WithValidation
         }
 
         return new VesselMachinery([
-            'installed_date'=> $installedDate,
+            'installed_date' => $installedDate,
             'vessel_id' => $vessel->getAttribute('id'),
             'machinery_id' => $machinery->getAttribute('id'),
             'incharge_rank_id' => $inchargeRank->getAttribute('id'),

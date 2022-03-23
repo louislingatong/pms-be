@@ -11,9 +11,6 @@ use App\Models\WorkFile;
 use App\Traits\Uploadable;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -158,6 +155,39 @@ class WorkService
     }
 
     /**
+     * Get the job due date
+     *
+     * @param string $date
+     * @param Interval $interval
+     * @return Carbon
+     */
+    public function getDueDate(string $date, Interval $interval): Carbon
+    {
+        $dueDate = Carbon::create($date);
+
+        /** @var IntervalUnit $intervalUnit */
+        $intervalUnit = $interval->unit;
+        switch ($intervalUnit->getAttribute('name')) {
+            case config('interval.units.days'):
+                $dueDate->addDays($interval->getAttribute('value'));
+                break;
+            case config('interval.units.hours'):
+                $dueDate->addHours($interval->getAttribute('value'));
+                break;
+            case config('interval.units.weeks'):
+                $dueDate->addWeeks($interval->getAttribute('value'));
+                break;
+            case config('interval.units.months'):
+                $dueDate->addMonths($interval->getAttribute('value'));
+                break;
+            case config('interval.units.years'):
+                $dueDate->addYears($interval->getAttribute('value'));
+                break;
+        }
+        return $dueDate;
+    }
+
+    /**
      * List of vessel sub category with job by conditions
      *
      * @param array $conditions
@@ -191,38 +221,5 @@ class WorkService
         }
 
         return $query->with('interval', 'vesselMachinery', 'subCategory', 'description', 'currentWork')->get();
-    }
-
-    /**
-     * Get the job due date
-     *
-     * @param string $date
-     * @param Interval $interval
-     * @return Carbon
-     */
-    public function getDueDate(string $date, Interval $interval): Carbon
-    {
-        $dueDate = Carbon::create($date);
-
-        /** @var IntervalUnit $intervalUnit */
-        $intervalUnit = $interval->unit;
-        switch ($intervalUnit->getAttribute('name')) {
-            case config('interval.units.days'):
-                $dueDate->addDays($interval->getAttribute('value'));
-                break;
-            case config('interval.units.hours'):
-                $dueDate->addHours($interval->getAttribute('value'));
-                break;
-            case config('interval.units.weeks'):
-                $dueDate->addWeeks($interval->getAttribute('value'));
-                break;
-            case config('interval.units.months'):
-                $dueDate->addMonths($interval->getAttribute('value'));
-                break;
-            case config('interval.units.years'):
-                $dueDate->addYears($interval->getAttribute('value'));
-                break;
-        }
-        return $dueDate;
     }
 }
