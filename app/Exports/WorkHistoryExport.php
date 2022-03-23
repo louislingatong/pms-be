@@ -45,7 +45,7 @@ class WorkHistoryExport implements FromArray, WithHeadings, WithMapping, WithEve
             'Last Done',
             'Running Hours',
             'Instructions',
-            'Encoded Data',
+            'Encoded Date',
             'Encoded By',
         ];
     }
