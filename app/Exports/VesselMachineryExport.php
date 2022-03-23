@@ -76,7 +76,7 @@ class VesselMachineryExport implements FromArray, WithHeadings, WithMapping, Wit
             $subCategory->getAttribute('name'),
             $description->getAttribute('name'),
             $interval->getAttribute('name'),
-            $row['installed_date'],
+            Carbon::create($row['installed_date'])->format('d-M-Y'),
         ];
     }
 
