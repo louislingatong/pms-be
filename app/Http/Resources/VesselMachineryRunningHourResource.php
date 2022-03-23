@@ -21,7 +21,6 @@ class VesselMachineryRunningHourResource extends JsonResource
         $vesselMachinery = $this->resource;
         return [
             'id' => $vesselMachinery->getAttribute('id'),
-            'installed_date' => Carbon::parse($vesselMachinery->getAttribute('installed_date'))->format('d-M-Y'),
             'vessel' => new VesselResource($vesselMachinery->vessel),
             'machinery' => new MachineryResource($vesselMachinery->machinery),
             'current_running_hour' => new RunningHourResource($vesselMachinery->currentRunningHour),

@@ -21,6 +21,7 @@ class VesselMachinerySubCategory extends Model
      */
     protected $fillable = [
         'code',
+        'installed_date',
         'due_date',
         'interval_id',
         'vessel_machinery_id',

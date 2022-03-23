@@ -60,7 +60,7 @@ class WorkExport implements FromArray, WithHeadings, WithMapping, WithEvents, Sh
             $row['sub_category']['name'],
             $row['description']['name'],
             $row['interval']['name'],
-            Carbon::create($row['vessel_machinery']['installed_date'])->format('d-M-Y'),
+            Carbon::create($row['installed_date'])->format('d-M-Y'),
             $row['current_work']['last_done']
                 ? Carbon::create($row['current_work']['last_done'])->format('d-M-Y')
                 : '',

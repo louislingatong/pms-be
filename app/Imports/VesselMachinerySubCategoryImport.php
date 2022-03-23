@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Exceptions\IntervalNotFoundException;
 use App\Exceptions\VesselMachineryNotFoundException;
 use App\Models\Interval;
 use App\Models\IntervalUnit;
@@ -40,7 +41,11 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
         /** @var Interval $interval */
         $interval = Interval::where('name', $row['interval'])->first();
 
-        $dueDate = $this->getDueDate($vesselMachinery->getAttribute('installed_date'), $interval);
+        if (!($interval instanceof Interval)) {
+            throw new IntervalNotFoundException();
+        }
+
+        $dueDate = $this->getDueDate($row['commissioning_date'], $interval);
 
         /** @var MachinerySubCategory $machinerySubCategory */
         $machinerySubCategory = MachinerySubCategory::where('name', $row['name'])
@@ -95,6 +100,9 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
             case config('interval.units.years'):
                 $dueDate->addYears($interval->getAttribute('value'));
                 break;
+            default:
+                $dueDate = null;
+                break;
         }
         return $dueDate;
     }
@@ -121,6 +129,11 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
             '*.name' => [
                 'required',
                 'exists:machinery_sub_categories,name'
+            ],
+            '*.commissioning_date' => [
+                'nullable',
+                'date',
+                'date_format:d-M-Y',
             ],
         ];
     }

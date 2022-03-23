@@ -21,7 +21,6 @@ class VesselMachineryResource extends JsonResource
         $vesselMachinery = $this->resource;
         return [
             'id' => $vesselMachinery->getAttribute('id'),
-            'installed_date' => Carbon::parse($vesselMachinery->getAttribute('installed_date'))->format('d-M-Y'),
             'vessel' => new VesselResource($vesselMachinery->vessel),
             'machinery' => new MachineryResource($vesselMachinery->machinery),
             'incharge_rank' => new RankResource($vesselMachinery->inchargeRank),

@@ -15,8 +15,8 @@ class CreateIntervalsTable extends Migration
     {
         Schema::create('intervals', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('interval_unit_id');
-            $table->bigInteger('value');
+            $table->unsignedBigInteger('interval_unit_id')->nullable();
+            $table->bigInteger('value')->nullable();
             $table->string('name');
             $table->timestamps();
             $table->softDeletes();

@@ -15,6 +15,11 @@ class UpdateVesselMachinerySubCategoryRequest extends FormRequest
     {
         return [
             'code' => 'required',
+            'installed_date' => [
+                'required',
+                'date',
+                'date_format:d-M-Y',
+            ],
             'description' => 'nullable',
             'interval' => [
                 'nullable',
@@ -34,6 +39,11 @@ class UpdateVesselMachinerySubCategoryRequest extends FormRequest
     public function getCode()
     {
         return $this->input('code', null);
+    }
+
+    public function getInstalledDate()
+    {
+        return $this->input('installed_date', null);
     }
 
     public function getDescription()

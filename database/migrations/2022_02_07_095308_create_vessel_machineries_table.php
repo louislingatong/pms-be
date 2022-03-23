@@ -15,7 +15,6 @@ class CreateVesselMachineriesTable extends Migration
     {
         Schema::create('vessel_machineries', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamp('installed_date');
             $table->unsignedBigInteger('vessel_id');
             $table->unsignedBigInteger('machinery_id');
             $table->unsignedBigInteger('incharge_rank_id');

@@ -76,6 +76,7 @@ class IntervalController extends Controller
             $formData = [
                 'interval_unit' => $request->getUnit(),
                 'value' => $request->getValue(),
+                'name' => $request->getName(),
             ];
             $interval = $this->intervalService->create($formData);
             $this->response['data'] = new IntervalResource($interval);
@@ -124,6 +125,7 @@ class IntervalController extends Controller
             $formData = [
                 'interval_unit' => $request->getUnit(),
                 'value' => $request->getValue(),
+                'name' => $request->getName(),
             ];
             $interval = $this->intervalService->update($formData, $interval);
             $this->response['data'] = new IntervalResource($interval);

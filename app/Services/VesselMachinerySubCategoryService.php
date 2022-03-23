@@ -77,13 +77,10 @@ class VesselMachinerySubCategoryService
         DB::beginTransaction();
 
         try {
-            /** @var VesselMachinery $vesselMachinery */
-            $vesselMachinery = VesselMachinery::find($params['vessel_machinery_id']);
-
             /** @var Interval $interval */
             $interval = Interval::whereName($params['interval'])->first();
 
-            $params['due_date'] = $this->getDueDate($vesselMachinery->getAttribute('installed_date'), $interval);
+            $params['due_date'] = $this->getDueDate($params['installed_date'], $interval);
 
             /** @var MachinerySubCategory $machinerySubCategory */
             $machinerySubCategory = MachinerySubCategory::find($params['machinery_sub_category_id']);
@@ -158,13 +155,10 @@ class VesselMachinerySubCategoryService
         DB::beginTransaction();
 
         try {
-            /** @var VesselMachinery $vesselMachinery */
-            $vesselMachinery = VesselMachinery::find($params['vessel_machinery_id']);
-
             /** @var Interval $interval */
             $interval = Interval::whereName($params['interval'])->first();
 
-            $params['due_date'] = $this->getDueDate($vesselMachinery->getAttribute('installed_date'), $interval);
+            $params['due_date'] = $this->getDueDate($params['installed_date'], $interval);
 
             /** @var MachinerySubCategory $machinerySubCategory */
             $machinerySubCategory = MachinerySubCategory::find($params['machinery_sub_category_id']);

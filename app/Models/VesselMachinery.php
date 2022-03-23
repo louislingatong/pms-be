@@ -19,7 +19,6 @@ class VesselMachinery extends Model
      * @var array
      */
     protected $fillable = [
-        'installed_date',
         'vessel_id',
         'machinery_id',
         'incharge_rank_id',
@@ -118,9 +117,7 @@ class VesselMachinery extends Model
      */
     public function scopeSearch(Builder $query, string $keyword): Builder
     {
-        return $query->where('installed_date', 'LIKE', "%$keyword%")
-            ->where('due_date', 'LIKE', "%$keyword%")
-            ->orWhereHas('vessel', function ($q) use ($keyword) {
+        return $query->whereHas('vessel', function ($q) use ($keyword) {
                 $q->where('code_name', 'LIKE', "%$keyword%");
             })
             ->orWhereHas('machinery', function ($q) use ($keyword) {

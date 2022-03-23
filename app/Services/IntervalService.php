@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\IntervalNotFoundException;
+use App\Exceptions\IntervalUnitNotFoundException;
 use App\Http\Resources\IntervalResource;
 use App\Models\Interval;
 use App\Models\IntervalUnit;
@@ -76,10 +77,15 @@ class IntervalService
         try {
             /** @var IntervalUnit $intervalUnit */
             $intervalUnit = IntervalUnit::whereName($params['interval_unit'])->first();
+
+            if (!($intervalUnit instanceof IntervalUnit)) {
+                throw new IntervalUnitNotFoundException();
+            }
+
             $interval = $this->interval->create([
-                'interval_unit_id' => $intervalUnit->getAttribute('id'),
                 'value' => $params['value'],
-                'name' => $params['value'] . ' ' . $intervalUnit->getAttribute('name'),
+                'interval_unit_id' => $intervalUnit->getAttribute('id'),
+                'name' => $params['name'] ?: $params['value'] . ' ' . $intervalUnit->getAttribute('name'),
             ]);
 
             DB::commit();
@@ -104,10 +110,15 @@ class IntervalService
     {
         /** @var IntervalUnit $intervalUnit */
         $intervalUnit = IntervalUnit::whereName($params['interval_unit'])->first();
+
+        if (!($intervalUnit instanceof IntervalUnit)) {
+            throw new IntervalUnitNotFoundException();
+        }
+
         $interval->update([
             'value' => $params['value'],
             'interval_unit_id' => $intervalUnit->getAttribute('id'),
-            'name' => $params['value'] . ' ' . $intervalUnit->getAttribute('name'),
+            'name' => $params['name'] ?: $params['value'] . ' ' . $intervalUnit->getAttribute('name'),
         ]);
         return $interval;
     }

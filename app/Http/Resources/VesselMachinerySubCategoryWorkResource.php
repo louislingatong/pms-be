@@ -20,16 +20,14 @@ class VesselMachinerySubCategoryWorkResource extends JsonResource
     {
         /** @var VesselMachinerySubCategory $vesselMachinerySubCategory */
         $vesselMachinerySubCategory = $this->resource;
-        /** @var VesselMachinery $vesselMachinery */
-        $vesselMachinery = $vesselMachinerySubCategory->vesselMachinery;
         return [
             'id' => $vesselMachinerySubCategory->getAttribute('id'),
             'code' => $vesselMachinerySubCategory->getAttribute('code'),
+            'installed_date' => Carbon::parse($vesselMachinerySubCategory->getAttribute('installed_date'))->format('d-M-Y'),
             'due_date' => Carbon::create($vesselMachinerySubCategory->getAttribute('due_date'))->format('d-M-Y'),
             'interval' => new IntervalResource($vesselMachinerySubCategory->interval),
             'sub_category' => new MachinerySubCategoryResource($vesselMachinerySubCategory->subCategory),
             'description' => new MachinerySubCategoryDescriptionResource($vesselMachinerySubCategory->description),
-            'installed_date' => Carbon::create($vesselMachinery->getAttribute('installed_date'))->format('d-M-Y'),
             'status' => $this->getStatus($vesselMachinerySubCategory->getAttribute('due_date')),
             'current_work' => new WorkResource($vesselMachinerySubCategory->currentWork),
             'work_history' => WorkResource::collection($vesselMachinerySubCategory->worksHistory),

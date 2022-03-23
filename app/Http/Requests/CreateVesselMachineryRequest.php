@@ -28,11 +28,6 @@ class CreateVesselMachineryRequest extends FormRequest
             ],
             'model' => 'nullable',
             'maker' => 'nullable',
-            'installed_date' => [
-                'required',
-                'date',
-                'date_format:d-M-Y',
-            ],
         ];
     }
 
@@ -59,10 +54,5 @@ class CreateVesselMachineryRequest extends FormRequest
     public function getMaker()
     {
         return $this->input('maker', null);
-    }
-
-    public function getInstalledDate()
-    {
-        return $this->input('installed_date', null);
     }
 }

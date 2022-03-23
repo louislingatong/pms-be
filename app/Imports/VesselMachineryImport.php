@@ -24,8 +24,6 @@ class VesselMachineryImport implements ToModel, WithHeadingRow, WithValidation
      */
     public function model(array $row): VesselMachinery
     {
-        $installedDate = Carbon::create($row['installed_date']);
-
         /** @var Vessel $vessel */
         $vessel = Vessel::where('name', $row['vessel'])->first();
 
@@ -45,7 +43,6 @@ class VesselMachineryImport implements ToModel, WithHeadingRow, WithValidation
         }
 
         return new VesselMachinery([
-            'installed_date' => $installedDate,
             'vessel_id' => $vessel->getAttribute('id'),
             'machinery_id' => $machinery->getAttribute('id'),
             'incharge_rank_id' => $inchargeRank->getAttribute('id'),
@@ -64,11 +61,6 @@ class VesselMachineryImport implements ToModel, WithHeadingRow, WithValidation
     public function rules(): array
     {
         return [
-            '*.installed_date' => [
-                'required',
-                'date',
-                'date_format:d-M-Y',
-            ],
             '*.vessel' => [
                 'required',
                 'exists:vessels,name',
