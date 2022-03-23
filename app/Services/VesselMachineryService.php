@@ -193,7 +193,7 @@ class VesselMachineryService
      *
      * @param VesselMachinery $vesselMachinery
      * @return bool
-     * @throws  
+     * @throws
      */
     public function delete(VesselMachinery $vesselMachinery): bool
     {
@@ -253,6 +253,7 @@ class VesselMachineryService
                     if ($vesselMachinerySubCategory instanceof VesselMachinerySubCategory) {
                         $vesselMachinerySubCategory->update([
                             'code' => $subCategory['code'],
+                            'installed_date' => Carbon::create($subCategory['installed_date']),
                             'due_date' => $dueDate,
                             'interval_id' => $interval->getAttribute('id'),
                             'machinery_sub_category_description_id' => isset($description)
