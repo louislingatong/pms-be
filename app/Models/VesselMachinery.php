@@ -117,20 +117,15 @@ class VesselMachinery extends Model
      */
     public function scopeSearch(Builder $query, string $keyword): Builder
     {
-        return $query->whereHas('vessel', function ($q) use ($keyword) {
-                $q->where('code_name', 'LIKE', "%$keyword%");
-            })
-            ->orWhereHas('machinery', function ($q) use ($keyword) {
+        return $query->whereHas('machinery', function ($q) use ($keyword) {
                 $q->where('name', 'LIKE', "%$keyword%")
+                    ->orWhere('code_name', 'LIKE', "%$keyword%")
                     ->orWhereHas('department', function ($q) use ($keyword) {
                         $q->where('name', 'LIKE', "%$keyword%");
                     });
             })
             ->orWhereHas('inchargeRank', function ($q) use ($keyword) {
                 $q->where('name', 'LIKE', "%$keyword%");
-            })
-            ->orWhereHas('interval', function ($q) use ($keyword) {
-                $q->where('value', 'LIKE', "%$keyword%");
             });
     }
 }

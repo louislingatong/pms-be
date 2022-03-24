@@ -41,7 +41,6 @@ class WorkHistoryExport implements FromArray, WithHeadings, WithMapping, WithEve
     public function headings(): array
     {
         return [
-            'Commissioning Date',
             'Last Done',
             'Running Hours',
             'Instructions',
@@ -60,7 +59,6 @@ class WorkHistoryExport implements FromArray, WithHeadings, WithMapping, WithEve
         /** @var User $creator */
         $creator = User::find($row['creator_id']);
         return [
-            Carbon::create($this->vesselMachinerySubCategory->getAttribute('installed_date'))->format('d-M-Y'),
             Carbon::create($row['last_done'])->format('d-M-Y'),
             $row['running_hours'] ?: '',
             $row['instructions'] ?: '',
