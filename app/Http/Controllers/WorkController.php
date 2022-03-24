@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\WorkExport;
 use App\Exports\WorkHistoryExport;
 use App\Http\Requests\CreateWorkRequest;
+use App\Http\Requests\DownloadFileRequest;
 use App\Http\Requests\ExportWorkRequest;
 use App\Http\Requests\SearchWorkRequest;
 use App\Http\Resources\VesselMachinerySubCategoryWorkResource;
@@ -14,6 +15,7 @@ use App\Services\WorkService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -136,5 +138,16 @@ class WorkController extends Controller
     public function exportWorkHistory(VesselMachinerySubCategory $vesselMachinerySubCategory): BinaryFileResponse
     {
         return Excel::download(new WorkHistoryExport($vesselMachinerySubCategory), 'Work History.xls');
+    }
+
+    /**
+     * Download work history
+     *
+     * @param DownloadFileRequest $request
+     * @return BinaryFileResponse
+     */
+    public function downloadFile(DownloadFileRequest $request): BinaryFileResponse
+    {
+        return Storage::download($request->getPath());
     }
 }

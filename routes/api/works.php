@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Requests\CountWorksRequest;
 use App\Models\VesselMachinerySubCategory;
-use App\Http\Requests\CountWorksRequest ;
+use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth:api']], function () {
     Route::get('/', 'WorkController@index');
@@ -30,4 +30,5 @@ Route::group(['middleware' => ['auth:api']], function () {
     });
     Route::get('/export', 'WorkController@export');
     Route::get('{vesselMachinerySubCategory}/export', 'WorkController@exportWorkHistory');
+    Route::get('/file-download', 'WorkController@downloadFile');
 });
