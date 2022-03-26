@@ -3,11 +3,10 @@
 namespace App\Http\Resources;
 
 use App\Models\VesselMachinery;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class VesselMachineryResource extends JsonResource
+class VesselMachineryWithoutSubCategoriesResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -26,7 +25,6 @@ class VesselMachineryResource extends JsonResource
             'incharge_rank' => new RankResource($vesselMachinery->inchargeRank),
             'model' => $vesselMachinery->model ?: new MachineryModelResource($vesselMachinery->model),
             'maker' => $vesselMachinery->maker ?: new MachineryMakerResource($vesselMachinery->maker),
-            'sub_categories' => VesselMachinerySubCategoryResource::collection($vesselMachinery->subCategories),
         ];
     }
 }

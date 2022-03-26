@@ -8,7 +8,8 @@ use App\Http\Requests\EditVesselMachinerySubCategoryRequest;
 use App\Http\Requests\ImportRequest;
 use App\Http\Requests\SearchVesselMachineryRequest;
 use App\Http\Requests\UpdateVesselMachineryRequest;
-use App\Http\Resources\VesselMachineryResource;
+use App\Http\Resources\VesselMachineryWithoutSubCategoriesResource;
+use App\Http\Resources\VesselMachineryWithSubCategoriesResource;
 use App\Imports\VesselMachineryImport;
 use App\Models\VesselMachinery;
 use App\Services\VesselMachineryService;
@@ -88,7 +89,7 @@ class VesselMachineryController extends Controller
                 'maker' => $request->getMaker(),
             ];
             $vesselMachinery = $this->vesselMachineryService->create($formData);
-            $this->response['data'] = new VesselMachineryResource($vesselMachinery);
+            $this->response['data'] = new VesselMachineryWithSubCategoriesResource($vesselMachinery);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),
@@ -108,7 +109,7 @@ class VesselMachineryController extends Controller
     public function read(VesselMachinery $vesselMachinery): JsonResponse
     {
         try {
-            $this->response['data'] = new VesselMachineryResource($vesselMachinery);
+            $this->response['data'] = new VesselMachineryWithSubCategoriesResource($vesselMachinery);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),
@@ -139,7 +140,7 @@ class VesselMachineryController extends Controller
                 'maker' => $request->getMaker(),
             ];
             $vesselMachinery = $this->vesselMachineryService->update($formData, $vesselMachinery);
-            $this->response['data'] = new VesselMachineryResource($vesselMachinery);
+            $this->response['data'] = new VesselMachineryWithSubCategoriesResource($vesselMachinery);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),
@@ -187,7 +188,7 @@ class VesselMachineryController extends Controller
                 'vessel_machinery_sub_categories' => $request->getVesselMachinerySubCategories(),
             ];
             $vesselMachinery = $this->vesselMachineryService->editMachinerySubCategories($formData, $vesselMachinery);
-            $this->response['data'] = new VesselMachineryResource($vesselMachinery);
+            $this->response['data'] = new VesselMachineryWithSubCategoriesResource($vesselMachinery);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),

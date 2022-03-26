@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\VesselMachineryNotFoundException;
-use App\Http\Resources\VesselMachineryResource;
+use App\Http\Resources\VesselMachineryWithoutSubCategoriesResource;
 use App\Models\Interval;
 use App\Models\IntervalUnit;
 use App\Models\Machinery;
@@ -75,7 +75,7 @@ class VesselMachineryService
 
         $urlParams = ['keyword' => $conditions['keyword'], 'limit' => $limit];
 
-        return paginated($results, VesselMachineryResource::class, $page, $urlParams);
+        return paginated($results, VesselMachineryWithoutSubCategoriesResource::class, $page, $urlParams);
     }
 
     /**
