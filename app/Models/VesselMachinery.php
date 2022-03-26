@@ -105,7 +105,7 @@ class VesselMachinery extends Model
     public function runningHoursHistory(): HasMany
     {
         return $this->hasMany(RunningHour::class)
-            ->orderBy('id', 'ASC');
+            ->orderBy('id', 'DESC');
     }
 
     /**
