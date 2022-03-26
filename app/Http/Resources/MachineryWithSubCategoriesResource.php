@@ -6,7 +6,7 @@ use App\Models\Machinery;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MachineryResource extends JsonResource
+class MachineryWithSubCategoriesResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

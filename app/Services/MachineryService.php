@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\MachineryNotFoundException;
-use App\Http\Resources\MachineryResource;
+use App\Http\Resources\MachineryWithSubCategoriesResource;
 use App\Models\Machinery;
 use App\Models\MachinerySubCategory;
 use App\Models\VesselDepartment;
@@ -65,7 +65,7 @@ class MachineryService
 
         $urlParams = ['keyword' => $conditions['keyword'], 'limit' => $limit];
 
-        return paginated($results, MachineryResource::class, $page, $urlParams);
+        return paginated($results, MachineryWithSubCategoriesResource::class, $page, $urlParams);
     }
 
     /**

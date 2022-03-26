@@ -7,7 +7,7 @@ use App\Http\Requests\CreateMachineryRequest;
 use App\Http\Requests\ImportRequest;
 use App\Http\Requests\SearchMachineryRequest;
 use App\Http\Requests\UpdateMachineryRequest;
-use App\Http\Resources\MachineryResource;
+use App\Http\Resources\MachineryWithSubCategoriesResource;
 use App\Imports\MachineryImport;
 use App\Models\Machinery;
 use App\Services\MachineryService;
@@ -81,7 +81,7 @@ class MachineryController extends Controller
                 'name' => $request->getName(),
             ];
             $machinery = $this->machineryService->create($formData);
-            $this->response['data'] = new MachineryResource($machinery);
+            $this->response['data'] = new MachineryWithSubCategoriesResource($machinery);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),
@@ -101,7 +101,7 @@ class MachineryController extends Controller
     public function read(Machinery $machinery): JsonResponse
     {
         try {
-            $this->response['data'] = new MachineryResource($machinery);
+            $this->response['data'] = new MachineryWithSubCategoriesResource($machinery);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),
@@ -130,7 +130,7 @@ class MachineryController extends Controller
                 'name' => $request->getName(),
             ];
             $machinery = $this->machineryService->update($formData, $machinery);
-            $this->response['data'] = new MachineryResource($machinery);
+            $this->response['data'] = new MachineryWithSubCategoriesResource($machinery);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),
@@ -206,7 +206,7 @@ class MachineryController extends Controller
                 'name' => $request->getName(),
             ];
             $machinery = $this->machineryService->addSubCategory($formData, $machinery);
-            $this->response['data'] = new MachineryResource($machinery);
+            $this->response['data'] = new MachineryWithSubCategoriesResource($machinery);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),

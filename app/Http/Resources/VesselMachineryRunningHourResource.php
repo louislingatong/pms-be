@@ -22,7 +22,7 @@ class VesselMachineryRunningHourResource extends JsonResource
         return [
             'id' => $vesselMachinery->getAttribute('id'),
             'vessel' => new VesselResource($vesselMachinery->vessel),
-            'machinery' => new MachineryResource($vesselMachinery->machinery),
+            'machinery' => new MachineryWithoutSubCategoriesResource($vesselMachinery->machinery),
             'current_running_hour' => new RunningHourResource($vesselMachinery->currentRunningHour),
             'running_hour_history' => RunningHourResource::collection($vesselMachinery->runningHoursHistory),
         ];
