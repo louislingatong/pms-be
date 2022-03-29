@@ -26,10 +26,6 @@ class UpdateEmployeeRequest extends FormRequest
                 new EmailAddressRule,
                 'unique:users,email,' . $this->getId() . ',id',
             ],
-            'password' => [
-                'nullable',
-                new PasswordRule,
-            ],
             'department' => [
                 'required',
                 'exists:employee_departments,name',
@@ -66,11 +62,6 @@ class UpdateEmployeeRequest extends FormRequest
     public function getEmail()
     {
         return $this->input('email', null);
-    }
-
-    public function getPassword()
-    {
-        return $this->input('password', null);
     }
 
     public function getDepartment()

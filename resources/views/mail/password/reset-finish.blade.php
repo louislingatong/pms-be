@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Forgot Password</title>
+    <title>Reset Password</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Fonts -->
@@ -32,10 +32,11 @@
             border: 1px solid transparent;
             border-radius: 4px;
         }
-        .btn-primary {
+        .btn-link-primary {
             color: #fff;
             background-color: #337ab7;
             border-color: #2e6da4;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -44,10 +45,10 @@ Hi {{ $user->first_name }},
 <br>
 <br>
 <br>
-You told us you forgot your password. If you really did, click the button below to update your password.
+Your password for signing in has been changed successfully. If you made this change, then we're all set.
 <br>
-<a class="btn btn-primary" href="{{ $url }}" role="button">
-    Choose a New Password
+<a class="btn btn-link-primary" href="{{ $url }}" role="button">
+    Login
 </a>
 <br>
 <br>
@@ -60,4 +61,5 @@ Yours truly,
 Administrator
 </body>
 </html>
+
 

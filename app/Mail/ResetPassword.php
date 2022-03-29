@@ -8,7 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class ForgotPassword extends Mailable
+class ResetPassword extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -26,14 +26,15 @@ class ForgotPassword extends Mailable
     /**
      * Create a new message instance.
      *
+     * @param PasswordReset $passwordReset
      * @return void
      */
     public function __construct(PasswordReset $passwordReset)
     {
-        $this->view = 'mail.password.forgot';
+        $this->view = 'mail.password.reset';
         $this->subject = 'Reset your Password';
         $this->user = $passwordReset->user;
-        $this->url = env('APP_URL') . '/password/reset?token=' . $passwordReset->token;
+        $this->url = env('APP_URL') . '/password/reset?token=' . $passwordReset->getAttribute('token');
     }
 
     /**

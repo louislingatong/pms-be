@@ -32,10 +32,11 @@
             border: 1px solid transparent;
             border-radius: 4px;
         }
-        .btn-primary {
+        .btn-link-primary {
             color: #fff;
             background-color: #337ab7;
             border-color: #2e6da4;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -46,7 +47,7 @@ Hi {{ $user->first_name }},
 <br>
 Your account has been created. To activate your account, click the button below.
 <br>
-<a class="btn btn-primary" href="{{ $url }}" role="button">
+<a class="btn btn-link-primary" href="{{ $url }}" role="button">
     Activate
 </a>
 <br>

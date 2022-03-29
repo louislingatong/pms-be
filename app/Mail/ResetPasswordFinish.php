@@ -7,7 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class PasswordChange extends Mailable
+class ResetPasswordFinish extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -24,10 +24,11 @@ class PasswordChange extends Mailable
      * Create a new message instance.
      *
      * @param User $user
+     * @return void
      */
     public function __construct(User $user)
     {
-        $this->view = 'mail.password.reset';
+        $this->view = 'mail.password.reset-finish';
         $this->subject = 'Password Changed';
         $this->user = $user;
         $this->url = config('app.url') . '/sign-in';

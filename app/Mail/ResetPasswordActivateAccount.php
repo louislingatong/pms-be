@@ -2,49 +2,40 @@
 
 namespace App\Mail;
 
+use App\Models\PasswordReset;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class UserSignUp extends Mailable
+class ResetPasswordActivateAccount extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $view;
-    /**
-     * @var string
-     */
+    /** @var string */
     public $subject;
-    /**
-     * @var User
-     */
-    protected $user;
-    /**
-     * @var string
-     */
+    /** @var PasswordReset */
+    protected $passwordReset;
+    /** @var string */
     protected $url;
-    /**
-     * @var string
-     */
-    protected $password;
+    /** @var User */
+    protected $user;
 
     /**
      * Create a new message instance.
      *
-     * @param User $user
-     * @param string $token
+     * @param PasswordReset $passwordReset
      * @return void
      */
-    public function __construct(User $user, string $token)
+    public function __construct(PasswordReset $passwordReset)
     {
-        $this->view = 'mail.users.signup';
+        $this->view = 'mail.users.activate';
         $this->subject = 'Activate your Account';
-        $this->user = $user;
-        $this->url = env('APP_URL') . '/activate?token=' . $token;
+        $this->user = $passwordReset->user;
+        $this->url = env('APP_URL') . '/password/reset?token=' . $passwordReset->getAttribute('token');
     }
 
     /**

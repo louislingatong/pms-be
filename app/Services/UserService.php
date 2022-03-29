@@ -7,8 +7,12 @@ use App\Exceptions\UserNotCreatedException;
 use App\Exceptions\UserNotFoundException;
 use App\Exceptions\UserStatusNotFoundException;
 use App\Http\Resources\UserResource;
-use App\Mail\UserSignUp;
+use App\Mail\ResetPasswordActivateAccount;
+use App\Mail\ResetPassword;
+use App\Mail\ResetPasswordFinish;
+use App\Mail\ActivateAccount;
 use App\Models\ActivationToken;
+use App\Models\PasswordReset;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Traits\Uploadable;
@@ -17,6 +21,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class UserService
 {
@@ -25,14 +30,19 @@ class UserService
     /** @var User */
     protected $user;
 
+    /** @var PasswordReset */
+    protected $passwordReset;
+
     /**
      * UserService constructor.
      *
      * @param User $user
+     * @param PasswordReset $passwordReset
      */
-    public function __construct(User $user)
+    public function __construct(User $user, PasswordReset $passwordReset)
     {
         $this->user = $user;
+        $this->passwordReset = $passwordReset;
     }
 
     /**
@@ -84,7 +94,7 @@ class UserService
         DB::beginTransaction();
 
         try {
-            $params['password'] = md5($params['password']);
+            $params['password'] = md5(Str::random(8));
             $status = UserStatus::where('name', config('user.statuses.pending'))->first();
 
             if (!($status instanceof UserStatus)) {
@@ -98,11 +108,17 @@ class UserService
                 throw new UserNotCreatedException();
             }
 
-            $token = Hash::make(time() . uniqid());
+            $token = Hash::make(uniqid() . time());
 
-            $user->activationTokens()->save(new ActivationToken(['token' => $token]));
+            $passwordReset = $this->passwordReset
+                ->create([
+                    'email' => $user->getAttribute('email'),
+                    'token' => $token,
+                ]);
 
-            Mail::to($user)->send(new UserSignUp($user, $token));
+            $passwordReset->user = $user;
+
+            Mail::to($user)->send(new ResetPasswordActivateAccount($passwordReset));
 
             DB::commit();
         } catch (Exception $e) {
@@ -124,12 +140,6 @@ class UserService
      */
     public function update(array $params, User $user): User
     {
-        if (array_key_exists('password', $params)) {
-            $params['password'] = strlen($params['password']) > 0
-                ? md5($params['password'])
-                : $user->password;
-        }
-
         $user->update($params);
 
         return $user;

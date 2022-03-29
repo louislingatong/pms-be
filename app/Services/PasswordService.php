@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Exceptions\InvalidPasswordResetTokenException;
-use App\Mail\ForgotPassword;
-use App\Mail\PasswordChange;
+use App\Mail\ResetPassword;
+use App\Mail\ResetPasswordFinish;
 use App\Models\PasswordReset;
 use App\Models\User;
 use App\Models\UserStatus;
@@ -80,7 +80,7 @@ class PasswordService
         $token->delete();
 
         // send successful password reset email notification to user
-        Mail::to($user)->send(new PasswordChange($user));
+        Mail::to($user)->send(new ResetPasswordFinish($user));
 
         // return user
         return $user;
@@ -112,7 +112,7 @@ class PasswordService
         $token->user = $user;
 
         // send password reset link email notification to user
-        Mail::to($user)->send(new ForgotPassword($token));
+        Mail::to($user)->send(new ResetPassword($token));
 
         return $token;
     }

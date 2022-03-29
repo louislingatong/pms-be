@@ -63,7 +63,6 @@ class PasswordController extends Controller
                 'token' => $request->getToken(),
                 'password' => $request->getPassword(),
             ];
-
             // perform password reset
             $this->passwordService->reset($formData);
             $this->response['reset'] = true;

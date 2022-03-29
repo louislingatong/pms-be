@@ -83,7 +83,6 @@ class EmployeeService
                 'middle_name' => $params['middle_name'],
                 'last_name' => $params['last_name'],
                 'email' => $params['email'],
-                'password' => $params['password'],
             ]);
 
             /** @var EmployeeDepartment $employeeDepartment */
@@ -124,7 +123,6 @@ class EmployeeService
                 'middle_name' => $params['middle_name'],
                 'last_name' => $params['last_name'],
                 'email' => $params['email'],
-                'password' => $params['password'],
             ], $employee->user);
 
             /** @var EmployeeDepartment $employeeDepartment */
