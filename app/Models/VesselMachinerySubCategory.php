@@ -131,7 +131,10 @@ class VesselMachinerySubCategory extends Model
             $warningDateTo = $warningDateFrom->copy()->addDays(config('work.warning_days'))->startOfDay();
             return $query->whereBetween('due_date', [$warningDateFrom, $warningDateTo]);
         } else if ($status === config('work.statuses.jobs_done')) {
+            $warningDateFrom = $currentDate->copy()->endOfDay();
+            $warningDateTo = $warningDateFrom->copy()->addDays(config('work.warning_days'))->startOfDay();
             return $query->where('due_date', '>', $currentDate)
+                ->whereNotBetween('due_date', [$warningDateFrom, $warningDateTo])
                 ->whereHas('currentWork', function ($q) use ($status) {
                     $q->whereNotNull('last_done');
                 });
