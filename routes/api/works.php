@@ -26,6 +26,16 @@ Route::group(['middleware' => ['auth:api']], function () {
                 $q->where('name', '=', $vessel);
             })
             ->count();
+        $work['jobs_done'] = VesselMachinerySubCategory::searchByStatus(config('work.statuses.jobs_done'))
+            ->whereHas('vesselMachinery.vessel', function ($q) use ($vessel) {
+                $q->where('name', '=', $vessel);
+            })
+            ->count();
+        $work['dry_dock'] = VesselMachinerySubCategory::searchByStatus(config('work.statuses.dry_dock'))
+            ->whereHas('vesselMachinery.vessel', function ($q) use ($vessel) {
+                $q->where('name', '=', $vessel);
+            })
+            ->count();
         return response()->json(['data' => $work]);
     });
     Route::get('/export', 'WorkController@export');

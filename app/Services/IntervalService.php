@@ -75,18 +75,23 @@ class IntervalService
         DB::beginTransaction();
 
         try {
-            /** @var IntervalUnit $intervalUnit */
-            $intervalUnit = IntervalUnit::whereName($params['interval_unit'])->first();
+            $newInterval = array();
+            if ($params['value'] && $params['interval_unit']) {
+                /** @var IntervalUnit $intervalUnit */
+                $intervalUnit = IntervalUnit::whereName($params['interval_unit'])->first();
 
-            if (!($intervalUnit instanceof IntervalUnit)) {
-                throw new IntervalUnitNotFoundException();
+                if (!($intervalUnit instanceof IntervalUnit)) {
+                    throw new IntervalUnitNotFoundException();
+                }
+
+                $newInterval['value'] = $params['value'];
+                $newInterval['interval_unit_id'] = $intervalUnit->getAttribute('id');
+                $newInterval['name'] = $params['value'] . ' ' . $intervalUnit->getAttribute('name');
+            } else {
+                $newInterval['name'] = $params['name'];
             }
 
-            $interval = $this->interval->create([
-                'value' => $params['value'],
-                'interval_unit_id' => $intervalUnit->getAttribute('id'),
-                'name' => $params['name'] ?: $params['value'] . ' ' . $intervalUnit->getAttribute('name'),
-            ]);
+            $interval = $this->interval->create($newInterval);
 
             DB::commit();
         } catch (Exception $e) {

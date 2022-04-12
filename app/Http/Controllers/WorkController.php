@@ -17,7 +17,6 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class WorkController extends Controller
 {
@@ -110,9 +109,8 @@ class WorkController extends Controller
      * Export work
      *
      * @param ExportWorkRequest $request
-     * @return BinaryFileResponse
      */
-    public function export(ExportWorkRequest $request): BinaryFileResponse
+    public function export(ExportWorkRequest $request)
     {
         $request->validated();
 
@@ -126,16 +124,15 @@ class WorkController extends Controller
 
         $results = $this->workService->export($conditions);
 
-        return Excel::download(new WorkExport($results->toArray()), 'Works.xls');
+        return Excel::download(new WorkExport($results->toArray(), $request->getVessel()), 'Works.xls');
     }
 
     /**
      * Export work history
      *
      * @param VesselMachinerySubCategory $vesselMachinerySubCategory
-     * @return BinaryFileResponse
      */
-    public function exportWorkHistory(VesselMachinerySubCategory $vesselMachinerySubCategory): BinaryFileResponse
+    public function exportWorkHistory(VesselMachinerySubCategory $vesselMachinerySubCategory)
     {
         return Excel::download(new WorkHistoryExport($vesselMachinerySubCategory), 'Work History.xls');
     }
@@ -144,10 +141,9 @@ class WorkController extends Controller
      * Download work history
      *
      * @param DownloadFileRequest $request
-     * @return BinaryFileResponse
      */
-    public function downloadFile(DownloadFileRequest $request): BinaryFileResponse
+    public function downloadFile(DownloadFileRequest $request)
     {
-        return Storage::download($request->getPath());
+        return Storage::disk('public')->download($request->getPath());
     }
 }

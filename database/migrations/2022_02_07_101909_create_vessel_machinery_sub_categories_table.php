@@ -17,7 +17,7 @@ class CreateVesselMachinerySubCategoriesTable extends Migration
             $table->bigIncrements('id');
             $table->string('code');
             $table->timestamp('installed_date');
-            $table->timestamp('due_date');
+            $table->timestamp('due_date')->nullable();
             $table->unsignedBigInteger('interval_id')->nullable();
             $table->unsignedBigInteger('vessel_machinery_id');
             $table->unsignedBigInteger('machinery_sub_category_id');

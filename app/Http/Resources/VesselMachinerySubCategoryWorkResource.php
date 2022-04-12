@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\VesselMachinery;
 use App\Models\VesselMachinerySubCategory;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -24,11 +23,15 @@ class VesselMachinerySubCategoryWorkResource extends JsonResource
             'id' => $vesselMachinerySubCategory->getAttribute('id'),
             'code' => $vesselMachinerySubCategory->getAttribute('code'),
             'installed_date' => Carbon::parse($vesselMachinerySubCategory->getAttribute('installed_date'))->format('d-M-Y'),
-            'due_date' => Carbon::create($vesselMachinerySubCategory->getAttribute('due_date'))->format('d-M-Y'),
+            'due_date' => $vesselMachinerySubCategory->getAttribute('due_date')
+                ? Carbon::create($vesselMachinerySubCategory->getAttribute('due_date'))->format('d-M-Y')
+                : '',
             'interval' => new IntervalResource($vesselMachinerySubCategory->interval),
             'sub_category' => new MachinerySubCategoryResource($vesselMachinerySubCategory->subCategory),
             'description' => new MachinerySubCategoryDescriptionResource($vesselMachinerySubCategory->description),
-            'status' => $this->getStatus($vesselMachinerySubCategory->getAttribute('due_date')),
+            'status' => $vesselMachinerySubCategory->getAttribute('due_date')
+                ? $this->getStatus($vesselMachinerySubCategory->getAttribute('due_date'))
+                : config('work.statuses.dry_dock'),
             'current_work' => new WorkResource($vesselMachinerySubCategory->currentWork),
             'work_history' => WorkResource::collection($vesselMachinerySubCategory->worksHistory),
         ];
@@ -50,6 +53,8 @@ class VesselMachinerySubCategoryWorkResource extends JsonResource
             return config('work.statuses.due');
         } else if ($currentDate->diffInDays($dueDate) <= config('work.warning_days')) {
             return config('work.statuses.warning');
+        } else if ($currentDate->lessThan($dueDate)) {
+            return config('work.statuses.jobs_done');
         } else {
             return '';
         }

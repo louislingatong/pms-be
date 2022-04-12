@@ -7,7 +7,6 @@ use App\Http\Resources\VesselMachinerySubCategoryResource;
 use App\Models\Interval;
 use App\Models\IntervalUnit;
 use App\Models\MachinerySubCategory;
-use App\Models\VesselMachinery;
 use App\Models\VesselMachinerySubCategory;
 use Carbon\Carbon;
 use Exception;
@@ -114,32 +113,35 @@ class VesselMachinerySubCategoryService
      *
      * @param string $date
      * @param Interval $interval
-     * @return Carbon
+     * @return Carbon | null
      */
-    public function getDueDate(string $date, Interval $interval): Carbon
+    public function getDueDate(string $date, Interval $interval)
     {
         $dueDate = Carbon::create($date);
-
         /** @var IntervalUnit $intervalUnit */
         $intervalUnit = $interval->unit;
-        switch ($intervalUnit->getAttribute('name')) {
-            case config('interval.units.days'):
-                $dueDate->addDays($interval->getAttribute('value'));
-                break;
-            case config('interval.units.hours'):
-                $dueDate->addHours($interval->getAttribute('value'));
-                break;
-            case config('interval.units.weeks'):
-                $dueDate->addWeeks($interval->getAttribute('value'));
-                break;
-            case config('interval.units.months'):
-                $dueDate->addMonths($interval->getAttribute('value'));
-                break;
-            case config('interval.units.years'):
-                $dueDate->addYears($interval->getAttribute('value'));
-                break;
+        if ($intervalUnit instanceof IntervalUnit) {
+            switch ($intervalUnit->getAttribute('name')) {
+                case config('interval.units.days'):
+                    $dueDate->addDays($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.hours'):
+                    $dueDate->addHours($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.weeks'):
+                    $dueDate->addWeeks($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.months'):
+                    $dueDate->addMonths($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.years'):
+                    $dueDate->addYears($interval->getAttribute('value'));
+                    break;
+            }
+            return $dueDate;
+        } else {
+            return null;
         }
-        return $dueDate;
     }
 
     /**

@@ -13,7 +13,6 @@ use App\Models\VesselMachinery;
 use App\Models\VesselMachinerySubCategory;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -95,6 +94,13 @@ class VesselMachineryExport implements FromArray, WithHeadings, WithMapping, Wit
         /** @var Vessel $vessel */
         $vessel = $vesselMachinery->vessel;
 
+        $wrapTextAlignTopStyle = [
+            'alignment' => [
+                'wrapText' => true,
+                'vertical' => Alignment::VERTICAL_TOP,
+            ]
+        ];
+
         $borderBottomStyle = [
             'borders' => [
                 'bottom' => [
@@ -159,6 +165,7 @@ class VesselMachineryExport implements FromArray, WithHeadings, WithMapping, Wit
                 $event->sheet->setCellValue('E4', Carbon::now()->format('d-M-Y'));
             },
             AfterSheet::class => function(AfterSheet $event) use (
+                $wrapTextAlignTopStyle,
                 $vesselMachinery,
                 $fontBoldStyle,
                 $borderBottomStyle,
@@ -166,6 +173,7 @@ class VesselMachineryExport implements FromArray, WithHeadings, WithMapping, Wit
                 $fillGrayStyle,
                 $alignRightStyle
             ) {
+                $event->sheet->getStyle('A:E')->applyFromArray($wrapTextAlignTopStyle);
                 $event->sheet->getStyle('A1:E7')->applyFromArray($fontBoldStyle);
                 $event->sheet->getStyle('A7:E7')->applyFromArray($fillGrayStyle);
                 $event->sheet->getStyle('B1:B5')->applyFromArray($alignRightStyle);

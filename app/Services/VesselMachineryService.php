@@ -299,30 +299,34 @@ class VesselMachineryService
      *
      * @param string $date
      * @param Interval $interval
-     * @return Carbon
+     * @return Carbon | null
      */
-    public function getDueDate(string $date, Interval $interval): Carbon
+    public function getDueDate(string $date, Interval $interval)
     {
         $dueDate = Carbon::create($date);
         /** @var IntervalUnit $intervalUnit */
         $intervalUnit = $interval->unit;
-        switch ($intervalUnit->getAttribute('name')) {
-            case config('interval.units.days'):
-                $dueDate->addDays($interval->getAttribute('value'));
-                break;
-            case config('interval.units.hours'):
-                $dueDate->addHours($interval->getAttribute('value'));
-                break;
-            case config('interval.units.weeks'):
-                $dueDate->addWeeks($interval->getAttribute('value'));
-                break;
-            case config('interval.units.months'):
-                $dueDate->addMonths($interval->getAttribute('value'));
-                break;
-            case config('interval.units.years'):
-                $dueDate->addYears($interval->getAttribute('value'));
-                break;
+        if ($intervalUnit instanceof IntervalUnit) {
+            switch ($intervalUnit->getAttribute('name')) {
+                case config('interval.units.days'):
+                    $dueDate->addDays($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.hours'):
+                    $dueDate->addHours($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.weeks'):
+                    $dueDate->addWeeks($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.months'):
+                    $dueDate->addMonths($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.years'):
+                    $dueDate->addYears($interval->getAttribute('value'));
+                    break;
+            }
+            return $dueDate;
+        } else {
+            return null;
         }
-        return $dueDate;
     }
 }

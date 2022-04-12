@@ -2,22 +2,29 @@
 
 namespace App\Exports;
 
+use App\Models\Vessel;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Events\BeforeSheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class WorkExport implements FromArray, WithHeadings, WithMapping, WithEvents, ShouldAutoSize
+class WorkExport implements FromArray, WithHeadings, WithMapping, WithEvents, WithCustomStartCell, WithColumnWidths
 {
     protected $works;
+    protected $vesselName;
 
-    public function __construct(array $works)
+    public function __construct(array $works, string $vesselName)
     {
         $this->works = $works;
+        $this->vesselName = $vesselName;
     }
 
     /**
@@ -39,8 +46,8 @@ class WorkExport implements FromArray, WithHeadings, WithMapping, WithEvents, Sh
             'Description',
             'Intervals',
             'Commissioning Date',
-            'Last Done',
-            'Running Hours',
+            'Last Done (DD-MMM-YYYY)',
+            'Last Done (Run Hours)',
             'Due Date',
             'Status',
             'Instructions',
@@ -65,8 +72,8 @@ class WorkExport implements FromArray, WithHeadings, WithMapping, WithEvents, Sh
                 ? Carbon::create($row['current_work']['last_done'])->format('d-M-Y')
                 : '',
             $row['current_work']['running_hours'] ?: '',
-            Carbon::create($row['due_date'])->format('d-M-Y'),
-            $this->getStatus($row['due_date']),
+            $row['due_date'] ? Carbon::create($row['due_date'])->format('d-M-Y') : '',
+            $row['due_date'] ? $this->getStatus($row['due_date']) : config('work.statuses.dry_dock'),
             $row['current_work']['instructions'] ?: '',
             $row['current_work']['remarks'] ?: '',
         ];
@@ -77,7 +84,48 @@ class WorkExport implements FromArray, WithHeadings, WithMapping, WithEvents, Sh
      */
     public function registerEvents(): array
     {
+        /** @var Vessel $vessel */
+        $vessel = Vessel::where('name', '=', $this->vesselName)->first();
+
         $style = [
+            'alignment' => [
+                'wrapText' => true,
+                'vertical' => Alignment::VERTICAL_TOP,
+            ]
+        ];
+
+        $fontBoldStyle = [
+            'font' => [
+                'bold' => true,
+            ],
+        ];
+
+        $alignRightStyle = [
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+            ],
+        ];
+
+        $fillLightYellowStyle = [
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'color' => [
+                    'argb' => 'FFFFFF99',
+                ],
+            ],
+        ];
+
+        $borderBottomStyle = [
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['argb' => '000000'],
+                ],
+            ],
+        ];
+
+
+        $headerStyle = [
             'font' => [
                 'bold' => true,
             ],
@@ -90,8 +138,36 @@ class WorkExport implements FromArray, WithHeadings, WithMapping, WithEvents, Sh
         ];
 
         return [
-            AfterSheet::class => function(AfterSheet $event) use ($style) {
-                $event->sheet->getStyle('A1:K1')->applyFromArray($style);
+            BeforeSheet::class => function (BeforeSheet $event) use ($vessel) {
+                $event->sheet->setCellValue('B1', 'Name of Vessel:');
+                $event->sheet->setCellValue('B2', 'Vessel\'s Flag:');
+
+                $event->sheet->setCellValue('D1', 'Class:');
+                $event->sheet->setCellValue('D2', 'IMO No.:');
+
+                $event->sheet->setCellValue('C1', $vessel->getAttribute('name'));
+                $event->sheet->setCellValue('C2', $vessel->getAttribute('flag'));
+
+                $event->sheet->setCellValue('E1', '');
+                $event->sheet->setCellValue('E2', $vessel->getAttribute('imo_no'));
+            },
+            AfterSheet::class => function (AfterSheet $event) use (
+                $style,
+                $fontBoldStyle,
+                $alignRightStyle,
+                $fillLightYellowStyle,
+                $borderBottomStyle,
+                $headerStyle
+            ) {
+                $event->sheet->getStyle('A:K')->applyFromArray($style);
+                $event->sheet->getStyle('A1:K2')->applyFromArray($fontBoldStyle);
+                $event->sheet->getStyle('B1:B2')->applyFromArray($alignRightStyle);
+                $event->sheet->getStyle('D1:D2')->applyFromArray($alignRightStyle);
+                $event->sheet->getStyle('C1')->applyFromArray(array_merge($fillLightYellowStyle, $borderBottomStyle));
+                $event->sheet->getStyle('C2')->applyFromArray($borderBottomStyle);
+                $event->sheet->getStyle('E1')->applyFromArray($borderBottomStyle);
+                $event->sheet->getStyle('E2')->applyFromArray($borderBottomStyle);
+                $event->sheet->getStyle('A4:K4')->applyFromArray($headerStyle);
             }
         ];
     }
@@ -112,8 +188,34 @@ class WorkExport implements FromArray, WithHeadings, WithMapping, WithEvents, Sh
             return config('work.statuses.due');
         } else if ($currentDate->diffInDays($dueDate) <= config('work.warning_days')) {
             return config('work.statuses.warning');
+        } else if ($currentDate->lessThan($dueDate)) {
+            return config('work.statuses.jobs_done');
         } else {
             return '';
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function startCell(): string
+    {
+        return 'A4';
+    }
+
+    /**
+     * @return array
+     */
+    public function columnWidths(): array
+    {
+        return [
+            'B' => 25,
+            'C' => 30,
+            'D' => 25,
+            'E' => 30,
+            'F' => 12,
+            'G' => 12,
+            'J' => 12,
+        ];
     }
 }

@@ -8,17 +8,14 @@ use App\Http\Requests\EditVesselMachinerySubCategoryRequest;
 use App\Http\Requests\ImportRequest;
 use App\Http\Requests\SearchVesselMachineryRequest;
 use App\Http\Requests\UpdateVesselMachineryRequest;
-use App\Http\Resources\VesselMachineryWithoutSubCategoriesResource;
 use App\Http\Resources\VesselMachineryWithSubCategoriesResource;
 use App\Imports\VesselMachineryImport;
 use App\Models\VesselMachinery;
 use App\Services\VesselMachineryService;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Validators\ValidationException;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class VesselMachineryController extends Controller
 {
@@ -234,9 +231,8 @@ class VesselMachineryController extends Controller
      * Export vessel machinery
      *
      * @param VesselMachinery $vesselMachinery
-     * @return BinaryFileResponse
      */
-    public function exportVesselMachinery(VesselMachinery $vesselMachinery): BinaryFileResponse
+    public function exportVesselMachinery(VesselMachinery $vesselMachinery)
     {
         return Excel::download(new VesselMachineryExport($vesselMachinery), 'Vessel Machinery.xls');
     }
