@@ -63,6 +63,7 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
             'code' => $row['code'],
             'vessel_machinery_id' => $vesselMachinery->getAttribute('id'),
             'interval_id' => $interval->getAttribute('id'),
+            'installed_date' => $row['commissioning_date'] ? Carbon::create($row['commissioning_date']) : null,
             'due_date' => $dueDate,
             'machinery_sub_category_id' => $machinerySubCategory->getAttribute('id'),
             'machinery_sub_category_description_id' => (isset($description) && ($description instanceof MachinerySubCategoryDescription))
@@ -74,16 +75,16 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
     /**
      * Get the job due date
      *
-     * @param string $date
+     * @param $date
      * @param Interval $interval
      * @return Carbon | null
      */
-    public function getDueDate(string $date, Interval $interval)
+    public function getDueDate($date, Interval $interval)
     {
-        $dueDate = Carbon::create($date);
         /** @var IntervalUnit $intervalUnit */
         $intervalUnit = $interval->unit;
-        if ($intervalUnit instanceof IntervalUnit) {
+        if ($date && $intervalUnit instanceof IntervalUnit) {
+            $dueDate = Carbon::create($date);
             switch ($intervalUnit->getAttribute('name')) {
                 case config('interval.units.days'):
                     $dueDate->addDays($interval->getAttribute('value'));
@@ -133,7 +134,7 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
             '*.commissioning_date' => [
                 'nullable',
                 'date',
-                'date_format:d-M-Y',
+                'date_format:d-M-y',
             ],
         ];
     }

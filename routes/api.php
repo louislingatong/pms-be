@@ -48,8 +48,6 @@ Route::prefix('running-hours')
 // register works routes
 Route::prefix('works')
     ->group(base_path('routes/api/works.php'));
-
-
 // register vessel owners routes
 Route::prefix('vessel-owners')
     ->group(base_path('routes/api/vessel-owners.php'));

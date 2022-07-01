@@ -23,28 +23,30 @@ class RunningHoursImport implements ToModel, WithHeadingRow, WithValidation
      */
     public function model(array $row): RunningHour
     {
-        /** @var VesselMachinery $vesselMachinery */
-        $vesselMachinery = VesselMachinery::whereHas('vessel', function ($q) use ($row) {
-            $q->where('name', '=', $row['vessel']);
-        })->whereHas('machinery', function ($q) use ($row) {
-            $q->where('name', '=', $row['machinery']);
-        })->first();
+        if ($row['running_hours']) {
+            /** @var VesselMachinery $vesselMachinery */
+            $vesselMachinery = VesselMachinery::whereHas('vessel', function ($q) use ($row) {
+                $q->where('name', '=', $row['vessel']);
+            })->whereHas('machinery', function ($q) use ($row) {
+                $q->where('name', '=', $row['machinery']);
+            })->first();
 
-        if (!($vesselMachinery instanceof VesselMachinery)) {
-            throw new VesselMachineryNotFoundException();
+            if (!($vesselMachinery instanceof VesselMachinery)) {
+                throw new VesselMachineryNotFoundException();
+            }
+
+            $updatingDate = Carbon::create($row['updating_date']);
+
+            /** @var User $user */
+            $user = auth()->user();
+
+            return new RunningHour([
+                'vessel_machinery_id' => $vesselMachinery->getAttribute('id'),
+                'running_hours' => $row['running_hours'],
+                'updating_date' => $updatingDate,
+                'creator_id' => $user->getAttribute('id'),
+            ]);
         }
-
-        $updatingDate = Carbon::create($row['updating_date']);
-
-        /** @var User $user */
-        $user = auth()->user();
-
-        return new RunningHour([
-            'vessel_machinery_id' => $vesselMachinery->getAttribute('id'),
-            'running_hours' => $row['running_hours'],
-            'updating_date' => $updatingDate,
-            'creator_id' => $user->getAttribute('id'),
-        ]);
     }
 
     /**
@@ -61,15 +63,9 @@ class RunningHoursImport implements ToModel, WithHeadingRow, WithValidation
                 'required',
                 'exists:machineries,name'
             ],
-            '*.running_hours' => [
-                'required',
-                'numeric',
-                'min:1'
-            ],
             '*.updating_date' => [
-                'required',
                 'date',
-                'date_format:d-M-Y',
+                'date_format:d-M-y',
             ]
         ];
     }
