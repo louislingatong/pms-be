@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Exceptions\SubCategoryNotFoundException;
+use App\Exceptions\MachinerySubCategoryNotFoundException;
 use App\Http\Resources\MachinerySubCategoryResource;
 use App\Models\MachinerySubCategory;
 use Exception;
@@ -108,7 +108,7 @@ class MachinerySubCategoryService
     public function delete(MachinerySubCategory $subCategory): bool
     {
         if (!($subCategory instanceof MachinerySubCategory)) {
-            throw new SubCategoryNotFoundException();
+            throw new MachinerySubCategoryNotFoundException();
         }
         $subCategory->delete();
         return true;

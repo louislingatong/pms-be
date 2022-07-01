@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => ['auth:api']], function () {
     Route::get('/', 'WorkController@index');
     Route::post('/', 'WorkController@create');
-
     Route::get('/count', function (CountWorksRequest $request) {
         $vessel = $request->getVessel();
         $work = [];
@@ -38,6 +37,7 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->count();
         return response()->json(['data' => $work]);
     });
+    Route::post('/import', 'WorkController@import');
     Route::get('/export', 'WorkController@export');
     Route::get('{vesselMachinerySubCategory}/export', 'WorkController@exportWorkHistory');
     Route::get('/file-download', 'WorkController@downloadFile');

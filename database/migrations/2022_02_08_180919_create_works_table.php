@@ -16,7 +16,7 @@ class CreateWorksTable extends Migration
         Schema::create('works', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('vessel_machinery_sub_category_id');
-            $table->timestamp('last_done');
+            $table->timestamp('last_done')->nullable();
             $table->string('running_hours')->nullable();
             $table->string('instructions')->nullable();
             $table->string('remarks')->nullable();
