@@ -75,6 +75,7 @@ class MachinerySubCategoryController extends Controller
         try {
             $formData = [
                 'machinery_id' => $request->getMachineryId(),
+                'code' => $request->getCode(),
                 'name' => $request->getName(),
             ];
             $subCategory = $this->machinerySubCategoryService->create($formData);
@@ -126,6 +127,7 @@ class MachinerySubCategoryController extends Controller
         try {
             $formData = [
                 'machinery_id' => $request->getMachineryId(),
+                'code' => $request->getCode(),
                 'name' => $request->getName(),
             ];
             $subCategory = $this->machinerySubCategoryService->update($formData, $subCategory);

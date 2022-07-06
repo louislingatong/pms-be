@@ -14,8 +14,14 @@ class AddSubCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'code' => 'required',
             'name' => 'required',
         ];
+    }
+
+    public function getCode()
+    {
+        return $this->input('code', null);
     }
 
     public function getName()

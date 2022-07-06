@@ -39,6 +39,21 @@ class VesselsTableSeeder extends Seeder
             'name' => 'VALIANT SPIRIT',
             'owner' => 'Safargo Shipping Pte. Ltd'
         ],
+        [
+            'code_name' => 'CIARA MARU',
+            'name' => 'CIARA MARU',
+            'owner' => 'Chijin Shipping S.A.'
+        ],
+        [
+            'code_name' => 'SMC GM',
+            'name' => 'GLOBAL MELODY',
+            'owner' => 'SMC Shipping and Lighterage Corporation'
+        ],
+        [
+            'code_name' => 'SMC SLR',
+            'name' => 'SL ROSE',
+            'owner' => 'SMC Shipping and Lighterage Corporation'
+        ],
     ];
 
     /**

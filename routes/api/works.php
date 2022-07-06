@@ -4,9 +4,11 @@ use App\Http\Requests\CountWorksRequest;
 use App\Models\VesselMachinerySubCategory;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => ['auth:api']], function () {
-    Route::get('/', 'WorkController@index');
-    Route::post('/', 'WorkController@create');
+Route::group(['middleware' => ['auth:api', 'permission:jobs_access']], function () {
+    Route::get('/', 'WorkController@index')
+        ->middleware('permission:jobs_show');
+    Route::post('/', 'WorkController@create')
+        ->middleware('permission:jobs_create');
     Route::get('/count', function (CountWorksRequest $request) {
         $vessel = $request->getVessel();
         $work = [];
@@ -37,8 +39,12 @@ Route::group(['middleware' => ['auth:api']], function () {
             ->count();
         return response()->json(['data' => $work]);
     });
-    Route::post('/import', 'WorkController@import');
-    Route::get('/export', 'WorkController@export');
-    Route::get('{vesselMachinerySubCategory}/export', 'WorkController@exportWorkHistory');
-    Route::get('/file-download', 'WorkController@downloadFile');
+    Route::post('/import', 'WorkController@import')
+        ->middleware('permission:jobs_import');
+    Route::get('/export', 'WorkController@export')
+        ->middleware('permission:jobs_export');
+    Route::get('/file-download', 'WorkController@downloadFile')
+        ->middleware('permission:jobs_download_file');
+    Route::get('{vesselMachinerySubCategory}/export', 'WorkController@exportWorkHistory')
+        ->middleware('permission:jobs_history_export');
 });

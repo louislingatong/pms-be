@@ -16,6 +16,7 @@ class CreateMachinerySubCategoriesTable extends Migration
         Schema::create('machinery_sub_categories', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('machinery_id');
+            $table->string('code');
             $table->string('name');
             $table->timestamps();
             $table->softDeletes();

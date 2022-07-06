@@ -78,12 +78,14 @@ class EmployeeService
         DB::beginTransaction();
 
         try {
+            $role = $params['is_admin'] ? config('user.roles.super_admin') : config('user.roles.employee');
             $user = $this->userService->create([
                 'first_name' => $params['first_name'],
                 'middle_name' => $params['middle_name'],
                 'last_name' => $params['last_name'],
                 'email' => $params['email'],
-            ]);
+            ])
+                ->assignRole($role);
 
             /** @var EmployeeDepartment $employeeDepartment */
             $employeeDepartment = EmployeeDepartment::whereName($params['department'])->first();
@@ -118,12 +120,15 @@ class EmployeeService
         DB::beginTransaction();
 
         try {
+            $role = $params['is_admin'] ? config('user.roles.admin') : config('user.roles.employee');
+
             $this->userService->update([
                 'first_name' => $params['first_name'],
                 'middle_name' => $params['middle_name'],
                 'last_name' => $params['last_name'],
                 'email' => $params['email'],
-            ], $employee->user);
+            ], $employee->user)
+                ->syncRoles([$role]);
 
             /** @var EmployeeDepartment $employeeDepartment */
             $employeeDepartment = EmployeeDepartment::whereName($params['department'])->first();

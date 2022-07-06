@@ -2,14 +2,23 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => ['auth:api']], function () {
-    Route::get('/', 'VesselMachineryController@index');
-    Route::post('/', 'VesselMachineryController@create');
-    Route::get('{vesselMachinery}', 'VesselMachineryController@read');
-    Route::put('{vesselMachinery}', 'VesselMachineryController@update');
-    Route::delete('{vesselMachinery}', 'VesselMachineryController@delete');
+Route::group(['middleware' => ['auth:api', 'permission:vessel_machinery_access']], function () {
+    Route::get('/', 'VesselMachineryController@index')
+        ->middleware('permission:vessel_machinery_show');
+    Route::post('/', 'VesselMachineryController@create')
+        ->middleware('permission:vessel_machinery_create');
+    Route::get('{vesselMachinery}', 'VesselMachineryController@read')
+        ->middleware('permission:vessel_machinery_show');
+    Route::put('{vesselMachinery}', 'VesselMachineryController@update')
+        ->middleware('permission:vessel_machinery_edit');
+    Route::delete('{vesselMachinery}', 'VesselMachineryController@delete')
+        ->middleware('permission:vessel_machinery_delete');
 
-    Route::put('{vesselMachinery}/edit-machinery-sub-categories', 'VesselMachineryController@editMachinerySubCategories');
-    Route::post('/import', 'VesselMachineryController@import');
-    Route::get('{vesselMachinery}/export', 'VesselMachineryController@exportVesselMachinery');
+    Route::post('/import', 'VesselMachineryController@import')
+        ->middleware('permission:vessel_machinery_import');
+
+    Route::put('{vesselMachinery}/edit-machinery-sub-categories', 'VesselMachineryController@editMachinerySubCategories')
+        ->middleware('permission:vessel_sub_category_edit');;
+    Route::get('{vesselMachinery}/export', 'VesselMachineryController@exportVesselMachinery')
+        ->middleware('permission:vessel_sub_category_export');
 });

@@ -21,7 +21,7 @@ class RunningHoursImport implements ToModel, WithHeadingRow, WithValidation
      * @return RunningHour
      * @throws
      */
-    public function model(array $row): RunningHour
+    public function model(array $row): ?RunningHour
     {
         if ($row['running_hours']) {
             /** @var VesselMachinery $vesselMachinery */
@@ -32,7 +32,7 @@ class RunningHoursImport implements ToModel, WithHeadingRow, WithValidation
             })->first();
 
             if (!($vesselMachinery instanceof VesselMachinery)) {
-                throw new VesselMachineryNotFoundException();
+                throw new VesselMachineryNotFoundException('Unable to retrieve machinery ' . $row['machinery'] . ' in vessel ' . $row['vessel']);
             }
 
             $updatingDate = Carbon::create($row['updating_date']);

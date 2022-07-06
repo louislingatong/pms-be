@@ -86,7 +86,7 @@ class IntervalService
 
                 $newInterval['value'] = $params['value'];
                 $newInterval['interval_unit_id'] = $intervalUnit->getAttribute('id');
-                $newInterval['name'] = $params['value'] . ' ' . $intervalUnit->getAttribute('name');
+                $newInterval['name'] = $params['name'] ?: $params['value'] . ' ' . $intervalUnit->getAttribute('name');
             } else {
                 $newInterval['name'] = $params['name'];
             }

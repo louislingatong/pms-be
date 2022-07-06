@@ -18,6 +18,7 @@ class CreateMachinerySubCategoryRequest extends FormRequest
                 'required',
                 'exists:machineries,id',
             ],
+            'code' => 'required',
             'name' => 'required',
         ];
     }
@@ -25,6 +26,11 @@ class CreateMachinerySubCategoryRequest extends FormRequest
     public function getMachineryId()
     {
         return $this->input('machinery_id', null);
+    }
+
+    public function getCode()
+    {
+        return $this->input('code', null);
     }
 
     public function getName()

@@ -9,4 +9,8 @@ return [
         'pending' => 'Pending',
         'locked' => 'Locked',
     ],
+    'roles' => [
+        'admin' => 'Admin',
+        'employee' => 'Employee',
+    ]
 ];

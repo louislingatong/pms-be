@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use App\Models\Employee;
 use App\Models\User;
 use App\Rules\EmailAddressRule;
-use App\Rules\PasswordRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateEmployeeRequest extends FormRequest
@@ -32,6 +31,10 @@ class UpdateEmployeeRequest extends FormRequest
             ],
             'id_number' => 'nullable',
             'position' => 'nullable',
+            'is_admin' => [
+                'nullable',
+                'boolean'
+            ]
         ];
     }
 
@@ -77,5 +80,10 @@ class UpdateEmployeeRequest extends FormRequest
     public function getPosition()
     {
         return $this->input('position', null);
+    }
+
+    public function getIsAdmin()
+    {
+        return $this->input('is_admin', false);
     }
 }

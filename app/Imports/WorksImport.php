@@ -35,11 +35,14 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
         })->first();
 
         if (!($vesselMachinery instanceof VesselMachinery)) {
-            throw new VesselMachineryNotFoundException();
+            throw new VesselMachineryNotFoundException('Unable to retrieve machinery ' . $row['machinery'] . ' in vessel ' . $row['vessel']);
         }
 
         /** @var MachinerySubCategory $machinerySubCategory */
-        $machinerySubCategory = $vesselMachinery->machinery->subCategories()->where('name', $row['name'])->first();
+        $machinerySubCategory = $vesselMachinery->machinery->subCategories()
+            ->where('code', $row['code'])
+            ->where('name', $row['name'])
+            ->first();
 
         if (!($machinerySubCategory instanceof MachinerySubCategory)) {
             throw new MachinerySubCategoryNotFoundException();

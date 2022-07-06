@@ -203,6 +203,7 @@ class MachineryController extends Controller
 
         try {
             $formData = [
+                'code' => $request->getCode(),
                 'name' => $request->getName(),
             ];
             $machinery = $this->machineryService->addSubCategory($formData, $machinery);

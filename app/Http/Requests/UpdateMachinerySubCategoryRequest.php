@@ -18,6 +18,7 @@ class UpdateMachinerySubCategoryRequest extends FormRequest
                 'required',
                 'exists:machineries,id',
             ],
+            'code' => 'required',
             'name' => 'required',
         ];
     }
@@ -25,6 +26,11 @@ class UpdateMachinerySubCategoryRequest extends FormRequest
     public function getMachineryId()
     {
         return (int)$this->input('machinery_id', null);
+    }
+
+    public function getCode()
+    {
+        return $this->input('code', null);
     }
 
     public function getName()

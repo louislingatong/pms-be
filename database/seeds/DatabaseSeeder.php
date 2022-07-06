@@ -19,5 +19,6 @@ class DatabaseSeeder extends Seeder
         $this->call(RankTypesTableSeeder::class);
         $this->call(RanksTableSeeder::class);
         $this->call(IntervalUnitsTableSeeder::class);
+        $this->call(RolesAndPermissionsTableSeeder::class);
     }
 }

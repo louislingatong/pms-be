@@ -17,15 +17,25 @@ class MachinerySubCategoryImport implements ToModel, WithHeadingRow, WithValidat
      * @param array $row
      * @return MachinerySubCategory
      */
-    public function model(array $row): MachinerySubCategory
+    public function model(array $row): ?MachinerySubCategory
     {
         /** @var Machinery $machinery */
         $machinery = Machinery::where('name', $row['machinery'])->first();
 
-        return new MachinerySubCategory([
-            'name' => $row['name'],
-            'machinery_id' => $machinery->getAttribute('id'),
-        ]);
+        $machinerySubCategory = MachinerySubCategory::where('code', $row['code'])
+            ->where('name', $row['name'])
+            ->where('machinery_id', $machinery->getAttribute('id'))
+            ->first();
+
+        if (is_null($machinerySubCategory)) {
+            return new MachinerySubCategory([
+                'machinery_id' => $machinery->getAttribute('id'),
+                'code' => $row['code'],
+                'name' => $row['name'],
+            ]);
+        }
+
+        return null;
     }
 
     /**
@@ -34,6 +44,7 @@ class MachinerySubCategoryImport implements ToModel, WithHeadingRow, WithValidat
     public function rules(): array
     {
         return [
+            '*.code' => 'required',
             '*.machinery' => [
                 'required',
                 'exists:machineries,name',

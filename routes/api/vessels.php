@@ -2,10 +2,15 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => ['auth:api']], function () {
-    Route::get('/', 'VesselController@index');
-    Route::post('/', 'VesselController@create');
-    Route::get('{vessel}', 'VesselController@read');
-    Route::put('{vessel}', 'VesselController@update');
-    Route::delete('{vessel}', 'VesselController@delete');
+Route::group(['middleware' => ['auth:api', 'permission:vessel_access']], function () {
+    Route::get('/', 'VesselController@index')
+        ->middleware('permission:vessel_show');
+    Route::post('/', 'VesselController@create')
+        ->middleware('permission:vessel_create');
+    Route::get('{vessel}', 'VesselController@read')
+        ->middleware('permission:vessel_show');
+    Route::put('{vessel}', 'VesselController@update')
+        ->middleware('permission:vessel_edit');
+    Route::delete('{vessel}', 'VesselController@delete')
+        ->middleware('permission:vessel_delete');
 });

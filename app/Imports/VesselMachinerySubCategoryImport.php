@@ -35,20 +35,12 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
         })->first();
 
         if (!($vesselMachinery instanceof VesselMachinery)) {
-            throw new VesselMachineryNotFoundException();
+            throw new VesselMachineryNotFoundException('Unable to retrieve machinery ' . $row['machinery'] . ' in vessel ' . $row['vessel']);
         }
-
-        /** @var Interval $interval */
-        $interval = Interval::where('name', $row['interval'])->first();
-
-        if (!($interval instanceof Interval)) {
-            throw new IntervalNotFoundException();
-        }
-
-        $dueDate = $this->getDueDate($row['commissioning_date'], $interval);
 
         /** @var MachinerySubCategory $machinerySubCategory */
-        $machinerySubCategory = MachinerySubCategory::where('name', $row['name'])
+        $machinerySubCategory = MachinerySubCategory::where('code', $row['code'])
+            ->where('name', $row['name'])
             ->first();
 
         if (isset($row['description'])) {
@@ -59,10 +51,24 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
                 ]);
         }
 
+        $interval = null;
+        $dueDate = null;
+
+        if (isset($row['interval'])) {
+            /** @var Interval $interval */
+            $interval = Interval::where('name', $row['interval'])->first();
+
+            if (!($interval instanceof Interval)) {
+                throw new IntervalNotFoundException('Unable to retrieve interval ' . $row['interval']);
+            }
+
+            $dueDate = $this->getDueDate($row['commissioning_date'], $interval);
+        }
+
         return new VesselMachinerySubCategory([
             'code' => $row['code'],
             'vessel_machinery_id' => $vesselMachinery->getAttribute('id'),
-            'interval_id' => $interval->getAttribute('id'),
+            'interval_id' => isset($interval) ? $interval->getAttribute('id') : null,
             'installed_date' => $row['commissioning_date'] ? Carbon::create($row['commissioning_date']) : null,
             'due_date' => $dueDate,
             'machinery_sub_category_id' => $machinerySubCategory->getAttribute('id'),
@@ -122,10 +128,6 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
             '*.machinery' => [
                 'required',
                 'exists:machineries,name'
-            ],
-            '*.interval' => [
-                'required',
-                'exists:intervals,name'
             ],
             '*.name' => [
                 'required',

@@ -18,6 +18,23 @@ class UserResource extends JsonResource
     {
         /** @var User $user */
         $user = $this->resource;
+
+        $permissions = collect([]);
+
+        if ($user->permissions->count()) {
+            $permissions = $user->permissions;
+        } else {
+            foreach ($user->roles as $role) {
+                $permissions = $permissions->merge($role->permissions);
+            }
+        }
+
+        $parsedPermissions = [];
+
+        foreach ($permissions as $permission) {
+            $parsedPermissions[$permission->name] = $permission->id;
+        }
+
         return [
             'id' => $user->getAttribute('id'),
             'first_name' => $user->getAttribute('first_name'),
@@ -25,6 +42,7 @@ class UserResource extends JsonResource
             'full_name' => $user->getAttribute('full_name'),
             'email' => $user->getAttribute('email'),
             'status' => new UserStatusResource($user->status),
+            'permissions' => (object)$parsedPermissions,
         ];
     }
 }

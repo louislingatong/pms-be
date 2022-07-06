@@ -20,6 +20,7 @@ class MachinerySubCategoryResource extends JsonResource
         $subCategory = $this->resource;
         return [
             'id' => $subCategory->getAttribute('id'),
+            'code' => $subCategory->getAttribute('code'),
             'name' => $subCategory->getAttribute('name'),
             'descriptions' => MachinerySubCategoryDescriptionResource::collection($subCategory->descriptions),
         ];

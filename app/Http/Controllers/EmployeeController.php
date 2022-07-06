@@ -78,6 +78,7 @@ class EmployeeController extends Controller
                 'department' => $request->getDepartment(),
                 'id_number' => $request->getIdNumber(),
                 'position' => $request->getPosition(),
+                'is_admin' => $request->getIsAdmin(),
             ];
             $employee = $this->employeeService->create($formData);
             $this->response['data'] = new EmployeeResource($employee);
@@ -131,6 +132,7 @@ class EmployeeController extends Controller
                 'department' => $request->getDepartment(),
                 'id_number' => $request->getIdNumber(),
                 'position' => $request->getPosition(),
+                'is_admin' => $request->getIsAdmin(),
             ];
             $employee = $this->employeeService->update($formData, $employee);
             $this->response['data'] = new EmployeeResource($employee);

@@ -6,6 +6,7 @@ use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Collection;
 
 class EmployeeResource extends JsonResource
 {
@@ -21,6 +22,21 @@ class EmployeeResource extends JsonResource
         $employee = $this->resource;
         /** @var User $user */
         $user = $employee->user;
+
+        $rolePermissions = collect([]);
+        foreach ($user->roles as $role) {
+            $rolePermissions = $rolePermissions->merge($role->permissions);
+        }
+
+        $permissions = collect([]);
+        if ($user->permissions->count()) {
+            $permissions = $user->permissions;
+        } else {
+            foreach ($user->roles as $role) {
+                $permissions = $permissions->merge($role->permissions);
+            }
+        }
+
         return [
             'id' => $employee->getAttribute('id'),
             'first_name' => $user->getAttribute('first_name'),
@@ -32,6 +48,21 @@ class EmployeeResource extends JsonResource
             'department' => new EmployeeDepartmentResource($employee->department),
             'id_number' => $employee->getAttribute('id_number'),
             'position' => $employee->getAttribute('position'),
+            'is_admin' => $user->hasRole(config('user.roles.admin')),
+            'role_permissions' => (object)$this->parseToPermissionsArray($rolePermissions),
+            'permissions' => (object)$this->parseToPermissionsArray($permissions),
         ];
+    }
+
+
+    public function parseToPermissionsArray(Collection $permissions): array
+    {
+        $parsedPermissions = [];
+
+        foreach ($permissions as $permission) {
+            $parsedPermissions[$permission->name] = $permission->id;
+        }
+
+        return $parsedPermissions;
     }
 }

@@ -18,6 +18,7 @@ class MachinerySubCategory extends Model
      */
     protected $fillable = [
         'machinery_id',
+        'code',
         'name'
     ];
 

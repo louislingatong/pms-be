@@ -2,7 +2,6 @@
 
 namespace App\Imports;
 
-use App\Exceptions\IntervalUnitNotFoundException;
 use App\Models\Interval;
 use App\Models\IntervalUnit;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -23,10 +22,6 @@ class IntervalImport implements ToModel, WithHeadingRow, WithValidation
     {
         /** @var IntervalUnit $intervalUnit */
         $intervalUnit = IntervalUnit::where('name', $row['unit'])->first();
-
-        if (!($intervalUnit instanceof IntervalUnit)) {
-            throw new IntervalUnitNotFoundException();
-        }
 
         return new Interval([
             'interval_unit_id' => $intervalUnit->getAttribute('id'),
