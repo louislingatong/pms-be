@@ -7,6 +7,7 @@ use App\Exceptions\UserNotCreatedException;
 use App\Exceptions\UserNotFoundException;
 use App\Exceptions\UserStatusNotFoundException;
 use App\Http\Resources\UserResource;
+use App\Mail\ResetPasswordActivateAccount;
 use App\Models\ActivationToken;
 use App\Models\PasswordReset;
 use App\Models\User;
@@ -15,6 +16,8 @@ use App\Traits\Uploadable;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class UserService
@@ -102,17 +105,17 @@ class UserService
                 throw new UserNotCreatedException();
             }
 
-//            $token = Hash::make(uniqid() . time());
-//
-//            $passwordReset = $this->passwordReset
-//                ->create([
-//                    'email' => $user->getAttribute('email'),
-//                    'token' => $token,
-//                ]);
-//
-//            $passwordReset->user = $user;
-//
-//            Mail::to($user)->send(new ResetPasswordActivateAccount($passwordReset));
+            $token = Hash::make(uniqid() . time());
+
+            $passwordReset = $this->passwordReset
+                ->create([
+                    'email' => $user->getAttribute('email'),
+                    'token' => $token,
+                ]);
+
+            $passwordReset->user = $user;
+
+            Mail::to($user)->send(new ResetPasswordActivateAccount($passwordReset));
 
             DB::commit();
         } catch (Exception $e) {
