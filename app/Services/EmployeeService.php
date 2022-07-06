@@ -78,7 +78,7 @@ class EmployeeService
         DB::beginTransaction();
 
         try {
-            $role = $params['is_admin'] ? config('user.roles.super_admin') : config('user.roles.employee');
+            $role = $params['is_admin'] ? config('user.roles.admin') : config('user.roles.employee');
             $user = $this->userService->create([
                 'first_name' => $params['first_name'],
                 'middle_name' => $params['middle_name'],

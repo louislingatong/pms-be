@@ -41,6 +41,6 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('P@ssw0rd'),
             'user_status_id' => $status->id,
             'email_verified_at' => Carbon::now(),
-        ]);
+        ])->assignRole(config('user.roles.admin'));
     }
 }
