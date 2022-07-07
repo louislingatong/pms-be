@@ -77,7 +77,7 @@ class VesselMachinerySubCategory extends Model
     public function currentWork(): HasOne
     {
         return $this->HasOne(Work::class, 'vessel_machinery_sub_category_id')
-            ->orderBy('id', 'DESC');
+            ->orderBy('updating_date', 'DESC');
     }
 
     /**
@@ -88,7 +88,7 @@ class VesselMachinerySubCategory extends Model
     public function worksHistory(): HasMany
     {
         return $this->HasMany(Work::class, 'vessel_machinery_sub_category_id')
-            ->orderBy('last_done', 'ASC');
+            ->orderBy('updating_date', 'DESC');
     }
 
     /**
