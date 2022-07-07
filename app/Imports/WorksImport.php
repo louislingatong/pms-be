@@ -144,6 +144,7 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
                     $dueDate->addYears($interval->getAttribute('value'));
                     break;
             }
+            $dueDate->subDay();
             return $dueDate;
         } else {
             return null;

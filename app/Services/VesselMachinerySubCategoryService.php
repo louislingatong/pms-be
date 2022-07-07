@@ -108,42 +108,6 @@ class VesselMachinerySubCategoryService
     }
 
     /**
-     * Get the job due date
-     *
-     * @param string $date
-     * @param Interval $interval
-     * @return Carbon | null
-     */
-    public function getDueDate(string $date, Interval $interval)
-    {
-        $dueDate = Carbon::create($date);
-        /** @var IntervalUnit $intervalUnit */
-        $intervalUnit = $interval->unit;
-        if ($intervalUnit instanceof IntervalUnit) {
-            switch ($intervalUnit->getAttribute('name')) {
-                case config('interval.units.days'):
-                    $dueDate->addDays($interval->getAttribute('value'));
-                    break;
-                case config('interval.units.hours'):
-                    $dueDate->addHours($interval->getAttribute('value'));
-                    break;
-                case config('interval.units.weeks'):
-                    $dueDate->addWeeks($interval->getAttribute('value'));
-                    break;
-                case config('interval.units.months'):
-                    $dueDate->addMonths($interval->getAttribute('value'));
-                    break;
-                case config('interval.units.years'):
-                    $dueDate->addYears($interval->getAttribute('value'));
-                    break;
-            }
-            return $dueDate;
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * Updates vessel machinery sub category in the database
      *
      * @param array $params
@@ -200,5 +164,42 @@ class VesselMachinerySubCategoryService
         }
         $vesselMachinerySubCategory->delete();
         return true;
+    }
+
+    /**
+     * Get the job due date
+     *
+     * @param string $date
+     * @param Interval $interval
+     * @return Carbon | null
+     */
+    public function getDueDate(string $date, Interval $interval)
+    {
+        $dueDate = Carbon::create($date);
+        /** @var IntervalUnit $intervalUnit */
+        $intervalUnit = $interval->unit;
+        if ($intervalUnit instanceof IntervalUnit) {
+            switch ($intervalUnit->getAttribute('name')) {
+                case config('interval.units.days'):
+                    $dueDate->addDays($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.hours'):
+                    $dueDate->addHours($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.weeks'):
+                    $dueDate->addWeeks($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.months'):
+                    $dueDate->addMonths($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.years'):
+                    $dueDate->addYears($interval->getAttribute('value'));
+                    break;
+            }
+            $dueDate->subDay();
+            return $dueDate;
+        } else {
+            return null;
+        }
     }
 }

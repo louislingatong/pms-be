@@ -136,6 +136,7 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
                     $dueDate->addYears($interval->getAttribute('value'));
                     break;
             }
+            $dueDate->subDay();
             return $dueDate;
         } else {
             return null;
