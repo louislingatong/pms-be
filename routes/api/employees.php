@@ -13,4 +13,6 @@ Route::group(['middleware' => ['auth:api', 'permission:employee_access']], funct
         ->middleware('permission:employee_edit');
     Route::delete('{employee}', 'EmployeeController@delete')
         ->middleware('permission:employee_delete');
+    Route::put('{employee}/edit-permissions', 'EmployeeController@updatePermissions')
+        ->middleware('permission:employee_edit');
 });

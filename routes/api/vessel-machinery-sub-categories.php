@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => ['auth:api']], function () {
+Route::group(['middleware' => ['auth:api', 'permission:vessel_machinery_access']], function () {
 //    Route::get('/', 'VesselMachinerySubCategoryController@index');
 //    Route::post('/', 'VesselMachinerySubCategoryController@create');
 //    Route::get('{vesselMachinerySubCategory}', 'VesselMachinerySubCategoryController@read');

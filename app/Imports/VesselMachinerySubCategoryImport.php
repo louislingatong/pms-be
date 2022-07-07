@@ -7,7 +7,6 @@ use App\Exceptions\VesselMachineryNotFoundException;
 use App\Models\Interval;
 use App\Models\IntervalUnit;
 use App\Models\MachinerySubCategory;
-use App\Models\MachinerySubCategoryDescription;
 use App\Models\VesselMachinery;
 use App\Models\VesselMachinerySubCategory;
 use Carbon\Carbon;
@@ -43,14 +42,6 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
             ->where('name', $row['name'])
             ->first();
 
-        if (isset($row['description'])) {
-            $description = $machinerySubCategory
-                ->descriptions()
-                ->firstOrCreate([
-                    'name' => $row['description'],
-                ]);
-        }
-
         $interval = null;
         $dueDate = null;
 
@@ -65,17 +56,54 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
             $dueDate = $this->getDueDate($row['commissioning_date'], $interval);
         }
 
+        $description = null;
+
+        if (isset($row['description'])) {
+            $description = $machinerySubCategory
+                ->descriptions()
+                ->firstOrCreate([
+                    'name' => $row['description'],
+                ]);
+        }
+
         return new VesselMachinerySubCategory([
             'code' => $row['code'],
             'vessel_machinery_id' => $vesselMachinery->getAttribute('id'),
-            'interval_id' => isset($interval) ? $interval->getAttribute('id') : null,
-            'installed_date' => $row['commissioning_date'] ? Carbon::create($row['commissioning_date']) : null,
+            'interval_id' => isset($row['interval']) ? $interval->getAttribute('id') : null,
+            'installed_date' => isset($row['commissioning_date']) ? Carbon::create($row['commissioning_date']) : null,
             'due_date' => $dueDate,
             'machinery_sub_category_id' => $machinerySubCategory->getAttribute('id'),
-            'machinery_sub_category_description_id' => (isset($description) && ($description instanceof MachinerySubCategoryDescription))
+            'machinery_sub_category_description_id' => isset($row['description'])
                 ? $description->getAttribute('id')
                 : null,
         ]);
+    }
+
+    /**
+     * @return array
+     */
+    public function rules(): array
+    {
+        return [
+            '*.code' => 'required',
+            '*.vessel' => [
+                'required',
+                'exists:vessels,name'
+            ],
+            '*.machinery' => [
+                'required',
+                'exists:machineries,name'
+            ],
+            '*.name' => [
+                'required',
+                'exists:machinery_sub_categories,name'
+            ],
+            '*.commissioning_date' => [
+                'nullable',
+                'date',
+                'date_format:d-M-y',
+            ],
+        ];
     }
 
     /**
@@ -112,32 +140,5 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
         } else {
             return null;
         }
-    }
-
-    /**
-     * @return array
-     */
-    public function rules(): array
-    {
-        return [
-            '*.code' => 'required',
-            '*.vessel' => [
-                'required',
-                'exists:vessels,name'
-            ],
-            '*.machinery' => [
-                'required',
-                'exists:machineries,name'
-            ],
-            '*.name' => [
-                'required',
-                'exists:machinery_sub_categories,name'
-            ],
-            '*.commissioning_date' => [
-                'nullable',
-                'date',
-                'date_format:d-M-y',
-            ],
-        ];
     }
 }

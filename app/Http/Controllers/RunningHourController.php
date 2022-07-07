@@ -18,6 +18,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Validators\ValidationException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class RunningHourController extends Controller
 {
@@ -136,8 +137,9 @@ class RunningHourController extends Controller
      * Export running hours
      *
      * @param ExportRunningHourRequest $request
+     * @return BinaryFileResponse
      */
-    public function export(ExportRunningHourRequest $request)
+    public function export(ExportRunningHourRequest $request): BinaryFileResponse
     {
         $request->validated();
 
@@ -155,8 +157,9 @@ class RunningHourController extends Controller
      * Export running hours history
      *
      * @param VesselMachinery $vesselMachinery
+     * @return BinaryFileResponse
      */
-    public function exportRunningHoursHistory(VesselMachinery $vesselMachinery)
+    public function exportRunningHoursHistory(VesselMachinery $vesselMachinery): BinaryFileResponse
     {
         return Excel::download(new RunningHoursHistoryExport($vesselMachinery), 'Running Hours History.xls');
     }

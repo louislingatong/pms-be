@@ -160,9 +160,9 @@ class WorkService
      *
      * @param string $date
      * @param Interval $interval
-     * @return Carbon | null
+     * @return Carbon
      */
-    public function getDueDate(string $date, Interval $interval)
+    public function getDueDate(string $date, Interval $interval): ?Carbon
     {
         $dueDate = Carbon::create($date);
         /** @var IntervalUnit $intervalUnit */

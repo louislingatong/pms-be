@@ -24,7 +24,7 @@ class IntervalImport implements ToModel, WithHeadingRow, WithValidation
         $intervalUnit = IntervalUnit::where('name', $row['unit'])->first();
 
         return new Interval([
-            'interval_unit_id' => $intervalUnit->getAttribute('id'),
+            'interval_unit_id' => ($intervalUnit instanceof IntervalUnit) ? $intervalUnit->getAttribute('id') : null,
             'value' => $row['value'],
             'name' => $row['name'],
         ]);
@@ -37,10 +37,7 @@ class IntervalImport implements ToModel, WithHeadingRow, WithValidation
     {
         return [
             '*.value' => 'nullable',
-            '*.unit' => [
-                'required_with:value',
-                'exists:interval_units,name',
-            ],
+            '*.unit' => 'required_with:value',
             '*.name' => 'required_without:value',
         ];
     }

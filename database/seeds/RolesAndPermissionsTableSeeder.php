@@ -95,10 +95,14 @@ class RolesAndPermissionsTableSeeder extends Seeder
         $employeeRole = Role::create(['name' => $default_roles['employee']]);
 
         $employeePermissions = [
+            'vessel_access',
+            'vessel_show',
             'running_hours_access',
+            'running_hours_show',
             'running_hours_create',
             'running_hours_history_show',
             'jobs_access',
+            'jobs_show',
             'jobs_create',
             'jobs_history_show',
         ];

@@ -20,6 +20,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Validators\ValidationException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class WorkController extends Controller
 {
@@ -143,8 +144,9 @@ class WorkController extends Controller
      * Export work
      *
      * @param ExportWorkRequest $request
+     * @return BinaryFileResponse
      */
-    public function export(ExportWorkRequest $request)
+    public function export(ExportWorkRequest $request): BinaryFileResponse
     {
         $request->validated();
 
@@ -165,8 +167,9 @@ class WorkController extends Controller
      * Export work history
      *
      * @param VesselMachinerySubCategory $vesselMachinerySubCategory
+     * @return BinaryFileResponse
      */
-    public function exportWorkHistory(VesselMachinerySubCategory $vesselMachinerySubCategory)
+    public function exportWorkHistory(VesselMachinerySubCategory $vesselMachinerySubCategory): BinaryFileResponse
     {
         return Excel::download(new WorkHistoryExport($vesselMachinerySubCategory), 'Work History.xls');
     }
@@ -175,8 +178,9 @@ class WorkController extends Controller
      * Download work history
      *
      * @param DownloadFileRequest $request
+     * @return BinaryFileResponse
      */
-    public function downloadFile(DownloadFileRequest $request)
+    public function downloadFile(DownloadFileRequest $request): BinaryFileResponse
     {
         return Storage::disk('public')->download($request->getPath());
     }

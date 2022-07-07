@@ -72,3 +72,6 @@ Route::prefix('ranks')
 // register employee departments routes
 Route::prefix('employee-departments')
     ->group(base_path('routes/api/employee-departments.php'));
+// register permissions route
+Route::prefix('permissions')
+    ->group(base_path('routes/api/permissions.php'));

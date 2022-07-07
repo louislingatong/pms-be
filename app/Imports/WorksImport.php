@@ -5,6 +5,8 @@ namespace App\Imports;
 use App\Exceptions\MachinerySubCategoryNotFoundException;
 use App\Exceptions\VesselMachineryNotFoundException;
 use App\Exceptions\VesselMachinerySubCategoryNotFoundException;
+use App\Models\Interval;
+use App\Models\IntervalUnit;
 use App\Models\MachinerySubCategory;
 use App\Models\User;
 use App\Models\VesselMachinery;
@@ -60,7 +62,7 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
         /** @var User $user */
         $user = auth()->user();
 
-        return new Work([
+        $work = new Work([
             'vessel_machinery_sub_category_id' => $vesselMachinerySubCategory->getAttribute('id'),
             'last_done' => $row['last_done_date'] ? Carbon::create($row['last_done_date']) : null,
             'running_hours' => $row['last_done_running_hours'] ?: null,
@@ -68,6 +70,20 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
             'instructions' => $row['instructions'] ?: null,
             'remarks' => $row['remarks'] ?: null,
         ]);
+
+        /** @var VesselMachinerySubCategory $vesselMachinerySubCategory */
+        $vesselMachinerySubCategory = $work->vesselMachinerySubCategory;
+        /** @var Interval $interval */
+        $interval = $vesselMachinerySubCategory->interval;
+
+        $vesselMachinerySubCategory->update([
+            'due_date' => $this->getDueDate(
+                $work->getAttribute('last_done'),
+                $interval
+            )
+        ]);
+
+        return $work;
     }
 
     /**
@@ -94,5 +110,41 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
                 'date_format:d-M-y',
             ],
         ];
+    }
+
+    /**
+     * Get the job due date
+     *
+     * @param string $date
+     * @param Interval $interval
+     * @return Carbon
+     */
+    public function getDueDate(string $date, Interval $interval): ?Carbon
+    {
+        $dueDate = Carbon::create($date);
+        /** @var IntervalUnit $intervalUnit */
+        $intervalUnit = $interval->unit;
+        if ($intervalUnit instanceof IntervalUnit) {
+            switch ($intervalUnit->getAttribute('name')) {
+                case config('interval.units.days'):
+                    $dueDate->addDays($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.hours'):
+                    $dueDate->addHours($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.weeks'):
+                    $dueDate->addWeeks($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.months'):
+                    $dueDate->addMonths($interval->getAttribute('value'));
+                    break;
+                case config('interval.units.years'):
+                    $dueDate->addYears($interval->getAttribute('value'));
+                    break;
+            }
+            return $dueDate;
+        } else {
+            return null;
+        }
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Rules\EmailAddressRule;
+use App\Rules\PositionRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateEmployeeRequest extends FormRequest
@@ -28,7 +29,10 @@ class CreateEmployeeRequest extends FormRequest
                 'exists:employee_departments,name',
             ],
             'id_number' => 'nullable',
-            'position' => 'nullable',
+            'position' => [
+                'nullable',
+                new PositionRule($this->request),
+            ],
             'is_admin' => [
                 'nullable',
                 'boolean'

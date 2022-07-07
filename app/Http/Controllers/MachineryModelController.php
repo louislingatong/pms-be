@@ -7,7 +7,7 @@ use App\Services\MachineryModelService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
-class MachineryModelController extends Controller
+class     MachineryModelController extends Controller
 {
     /** @var MachineryModelService */
     protected $machineryModelService;

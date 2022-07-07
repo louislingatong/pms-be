@@ -128,7 +128,8 @@ class EmployeeService
                 'last_name' => $params['last_name'],
                 'email' => $params['email'],
             ], $employee->user)
-                ->syncRoles([$role]);
+                ->syncRoles([$role])
+                ->syncPermissions([]);
 
             /** @var EmployeeDepartment $employeeDepartment */
             $employeeDepartment = EmployeeDepartment::whereName($params['department'])->first();
@@ -163,5 +164,19 @@ class EmployeeService
         $employee->delete();
         $this->userService->delete($employee->user);
         return true;
+    }
+
+    /**
+     * Updates employee in the database
+     *
+     * @param array $params
+     * @param Employee $employee
+     * @return Employee
+     * @throws
+     */
+    public function updatePermissions(array $params, Employee $employee): Employee
+    {
+        $employee->user->syncPermissions($params['permissions']);
+        return $employee;
     }
 }

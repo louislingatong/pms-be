@@ -81,17 +81,16 @@ class VesselMachinerySubCategoryService
 
             $params['due_date'] = $this->getDueDate($params['installed_date'], $interval);
 
-            /** @var MachinerySubCategory $machinerySubCategory */
-            $machinerySubCategory = MachinerySubCategory::find($params['machinery_sub_category_id']);
             if ($params['description']) {
+                /** @var MachinerySubCategory $machinerySubCategory */
+                $machinerySubCategory = MachinerySubCategory::find($params['machinery_sub_category_id']);
+
                 $description = $machinerySubCategory
                     ->descriptions()
                     ->firstOrCreate([
                         'name' => $params['description'],
                     ]);
-            }
 
-            if (isset($description) && $description->getAttribute('id')) {
                 $params['machinery_sub_category_description_id'] = $description->getAttribute('id');
             }
 
