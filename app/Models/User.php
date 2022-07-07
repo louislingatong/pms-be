@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
@@ -76,6 +77,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function activationTokens(): HasMany
     {
         return $this->hasMany(ActivationToken::class);
+    }
+
+    /**
+     * Retrieve employee of the user
+     *
+     * @return HasOne Employee
+     */
+    public function employee(): HasOne
+    {
+        return $this->hasOne(Employee::class, 'user_id');
     }
 
     /**

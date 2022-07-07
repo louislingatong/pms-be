@@ -68,6 +68,14 @@ class RunningHourService
             $query = $query->search($conditions['keyword']);
         }
 
+        $user = auth()->user();
+
+        if (!$user->hasRole(config('user.roles.admin'))) {
+            $query = $query->whereHas('inchargeRank', function ($q) use ($user) {
+                $q->where('name', $user->employee->position);
+            });
+        }
+
         $results = $query->skip($skip)
             ->orderBy('id', 'ASC')
             ->paginate($limit);
@@ -90,7 +98,6 @@ class RunningHourService
 
         try {
             $runningHour = $this->runningHour->create($params);
-
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\WorkExport;
 use App\Exports\WorkHistoryExport;
+use App\Http\Requests\CountWorksRequest;
 use App\Http\Requests\CreateWorkRequest;
 use App\Http\Requests\DownloadFileRequest;
 use App\Http\Requests\ExportWorkRequest;
@@ -183,5 +184,29 @@ class WorkController extends Controller
     public function downloadFile(DownloadFileRequest $request): BinaryFileResponse
     {
         return Storage::disk('public')->download($request->getPath());
+    }
+
+    /**
+     * Works count by status
+     *
+     * @param CountWorksRequest $request
+     * @return JsonResponse
+     */
+    public function workCount(CountWorksRequest $request): JsonResponse
+    {
+        $request->validated();
+
+        try {
+            $vessel = $request->getVessel();
+            $workCounts = $this->workService->countWorkAllStatus($vessel);
+            $this->response['data'] = $workCounts;
+        } catch (Exception $e) {
+            $this->response = [
+                'error' => $e->getMessage(),
+                'code' => 500,
+            ];
+        }
+
+        return response()->json($this->response, $this->response['code']);
     }
 }

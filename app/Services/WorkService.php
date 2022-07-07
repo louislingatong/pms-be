@@ -85,6 +85,14 @@ class WorkService
             $query = $query->search($conditions['keyword']);
         }
 
+        $user = auth()->user();
+
+        if (!$user->hasRole(config('user.roles.admin'))) {
+            $query = $query->whereHas('vesselMachinery.inchargeRank', function ($q) use ($user) {
+                $q->where('name', $user->employee->position);
+            });
+        }
+
         $results = $query->skip($skip)
             ->orderBy('id', 'ASC')
             ->paginate($limit);
@@ -225,5 +233,49 @@ class WorkService
         }
 
         return $query->with('interval', 'vesselMachinery', 'subCategory', 'description', 'currentWork')->get();
+    }
+
+    /**
+     * Work counts of all status by vessel
+     *
+     * @param string $vessel
+     * @return array
+     */
+    public function countWorkAllStatus(string $vessel): array
+    {
+        $count = [];
+
+        $count['warning'] = $this->countWorkByStatus($vessel, config('work.statuses.warning'));
+        $count['due'] = $this->countWorkByStatus($vessel, config('work.statuses.due'));
+        $count['overdue'] = $this->countWorkByStatus($vessel, config('work.statuses.overdue'));
+        $count['jobs_done'] = $this->countWorkByStatus($vessel, config('work.statuses.jobs_done'));
+        $count['dry_dock'] = $this->countWorkByStatus($vessel, config('work.statuses.dry_dock'));
+
+        return $count;
+    }
+
+    /**
+     * Work counts by vessel and status
+     *
+     * @param string $vessel
+     * @param string $status
+     * @return int
+     */
+    private function countWorkByStatus(string $vessel, string $status): int
+    {
+        $query = VesselMachinerySubCategory::searchByStatus($status)
+            ->whereHas('vesselMachinery.vessel', function ($q) use ($vessel) {
+                $q->where('name', '=', $vessel);
+            });
+
+        $user = auth()->user();
+
+        if (!$user->hasRole(config('user.roles.admin'))) {
+            $query = $query->whereHas('vesselMachinery.inchargeRank', function ($q) use ($user) {
+                $q->where('name', $user->employee->position);
+            });
+        }
+
+        return $query->count();
     }
 }
