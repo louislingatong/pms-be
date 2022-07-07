@@ -138,19 +138,21 @@ class WorkService
                     $work->file()->save($workFile);
                 }
 
-                /** @var VesselMachinerySubCategory $vesselMachinerySubCategory */
-                $vesselMachinerySubCategory = $work->vesselMachinerySubCategory;
-                /** @var Interval $interval */
-                $interval = $vesselMachinerySubCategory->interval;
+                if (isset($params['last_done'])) {
+                    /** @var VesselMachinerySubCategory $vesselMachinerySubCategory */
+                    $vesselMachinerySubCategory = $work->vesselMachinerySubCategory;
+                    /** @var Interval $interval */
+                    $interval = $vesselMachinerySubCategory->interval;
 
-                $vesselMachinerySubCategory->update([
-                    'due_date' => $this->getDueDate(
-                        $work->getAttribute('last_done'),
-                        $interval
-                    )
-                ]);
+                    $vesselMachinerySubCategory->update([
+                        'due_date' => $this->getDueDate(
+                            $work->getAttribute('last_done'),
+                            $interval
+                        )
+                    ]);
 
-                $updatedVesselMachinerySubCategory->push($vesselMachinerySubCategory);
+                    $updatedVesselMachinerySubCategory->push($vesselMachinerySubCategory);
+                }
             }
 
             DB::commit();
