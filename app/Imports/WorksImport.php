@@ -64,14 +64,13 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
 
         $work = new Work([
             'vessel_machinery_sub_category_id' => $vesselMachinerySubCategory->getAttribute('id'),
-            'last_done' => $row['last_done_date'],
+            'last_done' => Carbon::create($row['last_done_date']),
             'running_hours' => $row['last_done_running_hours'],
             'instructions' => $row['instructions'],
             'remarks' => $row['remarks'],
             'creator_id' => $user->getAttribute('id'),
         ]);
 
-        $lastDone = $work->getAttribute('last_done');
         if (isset($row['last_done_date'])) {
             /** @var VesselMachinerySubCategory $vesselMachinerySubCategory */
             $vesselMachinerySubCategory = $work->vesselMachinerySubCategory;
