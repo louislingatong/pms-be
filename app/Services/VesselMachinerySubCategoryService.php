@@ -193,7 +193,6 @@ class VesselMachinerySubCategoryService
                     break;
                 case config('interval.units.weeks'):
                     $dueDate->addWeeks($interval->getAttribute('value'));
-                    $dueDate->subDay();
                     break;
                 case config('interval.units.months'):
                     $dueDate->addMonths($interval->getAttribute('value'));

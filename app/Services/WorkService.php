@@ -182,7 +182,7 @@ class WorkService
                                 $dueDate = $this->getDueDate(
                                     $lastDoneDate,
                                     $intervalUnit->getAttribute('name'),
-                                    $intervalUnit->getAttribute('value')
+                                    $interval->getAttribute('value')
                                 );
                             }
                         }
@@ -264,7 +264,6 @@ class WorkService
                 break;
             case config('interval.units.weeks'):
                 $date->addWeeks($intervalValue);
-                $date->subDay();
                 break;
             case config('interval.units.months'):
                 $date->addMonths($intervalValue);

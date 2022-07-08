@@ -111,7 +111,7 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
                         $dueDate = $this->getDueDate(
                             $lastDoneDate,
                             $intervalUnit->getAttribute('name'),
-                            $intervalUnit->getAttribute('value')
+                            $interval->getAttribute('value')
                         );
                     }
                 }
@@ -173,7 +173,6 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
                 break;
             case config('interval.units.weeks'):
                 $date->addWeeks($intervalValue);
-                $date->subDay();
                 break;
             case config('interval.units.months'):
                 $date->addMonths($intervalValue);
