@@ -97,8 +97,7 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
                     }
 
                     if ($runningHour->getAttribute('updating_date')
-                        && $runningHour->getAttribute('running_hours')
-                        && $row['last_done_running_hours']) {
+                        && $runningHour->getAttribute('running_hours')) {
                         $updatingDate = Carbon::create($runningHour->getAttribute('updating_date'));
                         $remainingIntervals = $runningHour->getAttribute('running_hours') - $row['last_done_running_hours'];
                         $remainingIntervals = $interval->getAttribute('value') - $remainingIntervals;
@@ -106,7 +105,7 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
                         $dueDate = $this->getDueDate($updatingDate, $intervalUnit->getAttribute('name'), $remainingIntervals);
                     }
                 } else {
-                    if ($row['last_done_date'] && $row['last_done_running_hours']) {
+                    if ($row['last_done_date']) {
                         $lastDoneDate = Carbon::create($row['last_done_date']);
                         $runningHours = $row['last_done_running_hours'];
 
