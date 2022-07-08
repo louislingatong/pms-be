@@ -178,7 +178,7 @@ class WorkService
                         } else {
                             if ($params['last_done']) {
                                 $lastDoneDate = Carbon::create($params['last_done']);
-                                $runningHours = $params['running_hours'];
+                                $runningHours = $params['running_hours'] ?: '0';
 
                                 $dueDate = $this->getDueDate($lastDoneDate, $intervalUnit->getAttribute('name'), $runningHours);
                             }
