@@ -131,7 +131,7 @@ class WorkService
                 $work = $this->work->create([
                     'vessel_machinery_sub_category_id' => $id,
                     'last_done' => $params['last_done'],
-                    'running_hours' => $params['running_hours'],
+                    'running_hours' => $params['running_hours'] ?: 0,
                     'instructions' => $params['instructions'],
                     'remarks' => $params['remarks'],
                     'creator_id' => $params['creator_id'],
@@ -170,16 +170,15 @@ class WorkService
                             if ($runningHour->getAttribute('updating_date')
                                 && $runningHour->getAttribute('running_hours')) {
                                 $updatingDate = Carbon::create($runningHour->getAttribute('updating_date'));
-                                $runningHours = $params['running_hours'] ?: '0';
-                                $remainingIntervals = $runningHour->getAttribute('running_hours') - $runningHours;
+                                $remainingIntervals = $runningHour->getAttribute('running_hours') - $work->getAttribute('running_hours');
                                 $remainingIntervals = $interval->getAttribute('value') - $remainingIntervals;
 
                                 $dueDate = $this->getDueDate($updatingDate, $intervalUnit->getAttribute('name'), $remainingIntervals);
                             }
                         } else {
-                            if ($params['last_done']) {
-                                $lastDoneDate = Carbon::create($params['last_done']);
-                                $runningHours = $params['running_hours'] ?: '0';
+                            if ($work->getAttribute('last_done')) {
+                                $lastDoneDate = Carbon::create($work->getAttribute('last_done'));
+                                $runningHours = $work->getAttribute('running_hours');
 
                                 $dueDate = $this->getDueDate($lastDoneDate, $intervalUnit->getAttribute('name'), $runningHours);
                             }
@@ -248,7 +247,7 @@ class WorkService
      * @param string $intervalValue
      * @return Carbon
      */
-    public function getDueDate(Carbon $date, string $intervalUnit, string $intervalValue): ?Carbon
+    public function getDueDate(Carbon $date, string $intervalUnit, int $intervalValue): ?Carbon
     {
         switch ($intervalUnit) {
             case config('interval.units.days'):
