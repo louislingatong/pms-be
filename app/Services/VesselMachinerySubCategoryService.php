@@ -182,7 +182,9 @@ class VesselMachinerySubCategoryService
             switch ($intervalUnit->getAttribute('name')) {
                 case config('interval.units.days'):
                     $dueDate->addDays($interval->getAttribute('value'));
-                    $dueDate->subDay();
+                    if ($interval->getAttribute('value') > 1) {
+                        $dueDate->subDay();
+                    }
                     break;
                 case config('interval.units.hours'):
                     $dueDate->addHours($interval->getAttribute('value'));
