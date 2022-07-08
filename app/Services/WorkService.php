@@ -170,9 +170,10 @@ class WorkService
                             && $runningHour->getAttribute('running_hours')
                             && $work->getAttribute('running_hours')) {
                             $updatingDate = Carbon::create($runningHour->getAttribute('updating_date'));
-                            $runningHours = $runningHour->getAttribute('running_hours') - $work->getAttribute('running_hours');
+                            $remainingIntervals = $runningHour->getAttribute('running_hours') - $work->getAttribute('running_hours');
+                            $remainingIntervals = $interval->getAttribute('value') - $remainingIntervals;
 
-                            $dueDate = $this->getDueDate($updatingDate, $intervalUnit->getAttribute('name'), $runningHours);
+                            $dueDate = $this->getDueDate($updatingDate, $intervalUnit->getAttribute('name'), $remainingIntervals);
                         }
                     } else {
                         if ($work->getAttribute('last_done') && $work->getAttribute('running_hours')) {

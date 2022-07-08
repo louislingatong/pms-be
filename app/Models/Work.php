@@ -21,7 +21,6 @@ class Work extends Model
         'running_hours',
         'instructions',
         'remarks',
-        'updating_date',
         'creator_id',
     ];
 
