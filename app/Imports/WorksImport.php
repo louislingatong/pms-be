@@ -165,6 +165,9 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
     {
         switch ($intervalUnit) {
             case config('interval.units.days'):
+                if ($intervalValue === 1) {
+                    $intervalValue++;
+                }
                 $date->addDays($intervalValue);
                 break;
             case config('interval.units.hours'):
