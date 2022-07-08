@@ -159,7 +159,7 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
      * @param string $intervalValue
      * @return Carbon
      */
-    public function getDueDate(Carbon $date, string $intervalUnit, int $intervalValue): ?Carbon
+    public function getDueDate(Carbon $date, string $intervalUnit, ?int $intervalValue = 0): ?Carbon
     {
         switch ($intervalUnit) {
             case config('interval.units.days'):
