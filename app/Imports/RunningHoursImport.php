@@ -23,7 +23,7 @@ class RunningHoursImport implements ToModel, WithHeadingRow, WithValidation
      */
     public function model(array $row): ?RunningHour
     {
-        if ($row['running_hours']) {
+        if (is_numeric($row['running_hours'])) {
             /** @var VesselMachinery $vesselMachinery */
             $vesselMachinery = VesselMachinery::whereHas('vessel', function ($q) use ($row) {
                 $q->where('name', '=', $row['vessel']);
