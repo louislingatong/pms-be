@@ -45,7 +45,7 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
         $interval = null;
         $dueDate = null;
 
-        if (isset($row['interval'])) {
+        if ($row['interval']) {
             /** @var Interval $interval */
             $interval = Interval::where('name', $row['interval'])->first();
 
@@ -58,7 +58,7 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
 
         $description = null;
 
-        if (isset($row['description'])) {
+        if ($row['description']) {
             $description = $machinerySubCategory
                 ->descriptions()
                 ->firstOrCreate([
