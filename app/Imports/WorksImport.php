@@ -83,39 +83,40 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
             /** @var IntervalUnit $intervalUnit */
             $intervalUnit = $interval->unit;
 
+            if ($intervalUnit instanceof IntervalUnit) {
+                $dueDate = null;
 
-            $dueDate = null;
+                $isHours = $intervalUnit->getAttribute('name') === config('interval.units.hours');
 
-            $isHours = $intervalUnit->getAttribute('name') === config('interval.units.hours');
+                if ($isHours) {
+                    /** @var RunningHour $runningHour */
+                    $runningHour = $vesselMachinery->currentRunningHour;
 
-            if ($isHours) {
-                /** @var RunningHour $runningHour */
-                $runningHour = $vesselMachinery->currentRunningHour;
+                    if (!($runningHour instanceof RunningHour)) {
+                        throw new RunningHourNotFoundException();
+                    }
 
-                if (!($runningHour instanceof RunningHour)) {
-                    throw new RunningHourNotFoundException();
+                    if ($runningHour->getAttribute('updating_date')
+                        && $runningHour->getAttribute('running_hours')
+                        && $work->getAttribute('running_hours')) {
+                        $updatingDate = Carbon::create($runningHour->getAttribute('updating_date'));
+                        $remainingIntervals = $runningHour->getAttribute('running_hours') - $work->getAttribute('running_hours');
+                        $remainingIntervals = $interval->getAttribute('value') - $remainingIntervals;
+
+                        $dueDate = $this->getDueDate($updatingDate, $intervalUnit->getAttribute('name'), $remainingIntervals);
+                    }
+                } else {
+                    if ($work->getAttribute('last_done') && $work->getAttribute('running_hours')) {
+                        $lastDoneDate = Carbon::create($work->getAttribute('last_done'));
+                        $runningHours = $work->getAttribute('running_hours');
+
+                        $dueDate = $this->getDueDate($lastDoneDate, $intervalUnit->getAttribute('name'), $runningHours);
+                    }
                 }
 
-                if ($runningHour->getAttribute('updating_date')
-                    && $runningHour->getAttribute('running_hours')
-                    && $work->getAttribute('running_hours')) {
-                    $updatingDate = Carbon::create($runningHour->getAttribute('updating_date'));
-                    $remainingIntervals = $runningHour->getAttribute('running_hours') - $work->getAttribute('running_hours');
-                    $remainingIntervals = $interval->getAttribute('value') - $remainingIntervals;
-
-                    $dueDate = $this->getDueDate($updatingDate, $intervalUnit->getAttribute('name'), $remainingIntervals);
+                if (isset($dueDate)) {
+                    $vesselMachinerySubCategory->update(['due_date' => $dueDate]);
                 }
-            } else {
-                if ($work->getAttribute('last_done') && $work->getAttribute('running_hours')) {
-                    $lastDoneDate = Carbon::create($work->getAttribute('last_done'));
-                    $runningHours = $work->getAttribute('running_hours');
-
-                    $dueDate = $this->getDueDate($lastDoneDate, $intervalUnit->getAttribute('name'), $runningHours);
-                }
-            }
-
-            if (isset($dueDate)) {
-                $vesselMachinerySubCategory->update(['due_date' => $dueDate]);
             }
         }
 
