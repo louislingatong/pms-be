@@ -164,22 +164,22 @@ class WorkService
                             $runningHour = $vesselMachinery->currentRunningHour;
 
                             if (!($runningHour instanceof RunningHour)) {
-                                throw new RunningHourNotFoundException();
+                                throw new RunningHourNotFoundException('Unable to retrieve running hour of code ' . $vesselMachinerySubCategory->getAttribute('code'));
                             }
 
                             if ($runningHour->getAttribute('updating_date')
                                 && $runningHour->getAttribute('running_hours')
-                                && $work->getAttribute('running_hours')) {
+                                && $params['running_hours']) {
                                 $updatingDate = Carbon::create($runningHour->getAttribute('updating_date'));
-                                $remainingIntervals = $runningHour->getAttribute('running_hours') - $work->getAttribute('running_hours');
+                                $remainingIntervals = $runningHour->getAttribute('running_hours') - $params['running_hours'];
                                 $remainingIntervals = $interval->getAttribute('value') - $remainingIntervals;
 
                                 $dueDate = $this->getDueDate($updatingDate, $intervalUnit->getAttribute('name'), $remainingIntervals);
                             }
                         } else {
-                            if ($work->getAttribute('last_done') && $work->getAttribute('running_hours')) {
-                                $lastDoneDate = Carbon::create($work->getAttribute('last_done'));
-                                $runningHours = $work->getAttribute('running_hours');
+                            if ($params['last_done'] && $params['running_hours']) {
+                                $lastDoneDate = Carbon::create($params['last_done']);
+                                $runningHours = $params['running_hours'];
 
                                 $dueDate = $this->getDueDate($lastDoneDate, $intervalUnit->getAttribute('name'), $runningHours);
                             }
