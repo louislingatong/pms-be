@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Exceptions\MachinerySubCategoryNotFoundException;
+use App\Exceptions\RunningHourNotFoundException;
 use App\Exceptions\VesselMachineryNotFoundException;
 use App\Exceptions\VesselMachinerySubCategoryNotFoundException;
 use App\Models\Interval;
@@ -90,6 +91,10 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
             if ($isHours) {
                 /** @var RunningHour $runningHour */
                 $runningHour = $vesselMachinery->currentRunningHour;
+
+                if (!($runningHour instanceof RunningHour)) {
+                    throw new RunningHourNotFoundException();
+                }
 
                 if ($runningHour->getAttribute('updating_date')
                     && $runningHour->getAttribute('running_hours')

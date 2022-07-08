@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\RunningHourNotFoundException;
 use App\Http\Resources\VesselMachinerySubCategoryWorkResource;
 use App\Models\Interval;
 use App\Models\IntervalUnit;
@@ -160,6 +161,10 @@ class WorkService
                     if ($isHours) {
                         /** @var RunningHour $runningHour */
                         $runningHour = $vesselMachinery->currentRunningHour;
+
+                        if (!($runningHour instanceof RunningHour)) {
+                            throw new RunningHourNotFoundException();
+                        }
 
                         if ($runningHour->getAttribute('updating_date')
                             && $runningHour->getAttribute('running_hours')
