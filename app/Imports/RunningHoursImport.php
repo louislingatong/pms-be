@@ -47,6 +47,8 @@ class RunningHoursImport implements ToModel, WithHeadingRow, WithValidation
                 'creator_id' => $user->getAttribute('id'),
             ]);
         }
+
+        return null;
     }
 
     /**
