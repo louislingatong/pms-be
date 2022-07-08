@@ -179,7 +179,12 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
                 $date->subDay();
                 break;
             case config('interval.units.years'):
-                $date->addYears($intervalValue);
+                $years = (int)$intervalValue;
+                $date->addYears($years);
+                $additionalMonths = 12 * ($intervalValue - $years);
+                if ($additionalMonths) {
+                    $date->addMonths($additionalMonths);
+                }
                 $date->subDay();
                 break;
         }

@@ -139,7 +139,12 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
                     $dueDate->subDay();
                     break;
                 case config('interval.units.years'):
-                    $dueDate->addYears($interval->getAttribute('value'));
+                    $years = (int)$interval->getAttribute('value');
+                    $date->addYears($years);
+                    $additionalMonths = 12 * ($interval->getAttribute('value') - $years);
+                    if ($additionalMonths) {
+                        $date->addMonths($additionalMonths);
+                    }
                     $dueDate->subDay();
                     break;
             }

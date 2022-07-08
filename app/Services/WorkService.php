@@ -270,8 +270,12 @@ class WorkService
                 $date->subDay();
                 break;
             case config('interval.units.years'):
-                $date->addYears($intervalValue);
-                $date->subDay();
+                $years = (int)$intervalValue;
+                $date->addYears($years);
+                $additionalMonths = 12 * ($intervalValue - $years);
+                if ($additionalMonths) {
+                    $date->addMonths($additionalMonths);
+                }
                 break;
         }
 
