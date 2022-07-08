@@ -257,7 +257,7 @@ class WorkService
         switch ($intervalUnit) {
             case config('interval.units.days'):
                 if ($intervalValue === 1) {
-                    $intervalValue = $intervalValue + 1;
+                    $intervalValue = $intervalValue + 2;
                 }
                 $date->addDays($intervalValue);
                 break;
