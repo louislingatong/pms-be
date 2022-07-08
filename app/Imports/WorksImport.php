@@ -99,7 +99,8 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
                     if ($runningHour->getAttribute('updating_date')
                         && $runningHour->getAttribute('running_hours')) {
                         $updatingDate = Carbon::create($runningHour->getAttribute('updating_date'));
-                        $remainingIntervals = $runningHour->getAttribute('running_hours') - $row['last_done_running_hours'];
+                        $runningHours = $row['last_done_running_hours'] ?: '0';
+                        $remainingIntervals = $runningHour->getAttribute('running_hours') - $runningHours;
                         $remainingIntervals = $interval->getAttribute('value') - $remainingIntervals;
 
                         $dueDate = $this->getDueDate($updatingDate, $intervalUnit->getAttribute('name'), $remainingIntervals);
