@@ -113,6 +113,8 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
                             $intervalUnit->getAttribute('name'),
                             $intervalUnit->getAttribute('value')
                         );
+
+                        $dueDate->subDay();
                     }
                 }
 

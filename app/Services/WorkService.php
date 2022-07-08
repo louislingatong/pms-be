@@ -184,6 +184,8 @@ class WorkService
                                     $intervalUnit->getAttribute('name'),
                                     $intervalUnit->getAttribute('value')
                                 );
+
+                                $dueDate->subDay();
                             }
                         }
 
