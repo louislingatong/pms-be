@@ -113,8 +113,6 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
                             $intervalUnit->getAttribute('name'),
                             $intervalUnit->getAttribute('value')
                         );
-
-                        $dueDate->subDay();
                     }
                 }
 
@@ -165,22 +163,25 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
     {
         switch ($intervalUnit) {
             case config('interval.units.days'):
-                if ($intervalValue === 1) {
-                    $intervalValue = $intervalValue + 2;
-                }
                 $date->addDays($intervalValue);
+                if ($intervalValue > 1) {
+                    $date->subDay();
+                }
                 break;
             case config('interval.units.hours'):
                 $date->addHours($intervalValue);
                 break;
             case config('interval.units.weeks'):
                 $date->addWeeks($intervalValue);
+                $date->subDay();
                 break;
             case config('interval.units.months'):
                 $date->addMonths($intervalValue);
+                $date->subDay();
                 break;
             case config('interval.units.years'):
                 $date->addYears($intervalValue);
+                $date->subDay();
                 break;
         }
 
