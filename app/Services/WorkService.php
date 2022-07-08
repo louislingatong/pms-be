@@ -250,7 +250,7 @@ class WorkService
      * @param string $intervalValue
      * @return Carbon
      */
-    public function getDueDate(Carbon $date, string $intervalUnit, ?int $intervalValue = 0): ?Carbon
+    public function getDueDate(Carbon $date, string $intervalUnit, ?float $intervalValue = 0): ?Carbon
     {
         switch ($intervalUnit) {
             case config('interval.units.days'):
