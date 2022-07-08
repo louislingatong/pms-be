@@ -6,6 +6,7 @@ use App\Http\Requests\CreateEmployeeRequest;
 use App\Http\Requests\SearchEmployeeRequest;
 use App\Http\Requests\UpdateEmployeePermissionRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
+use App\Http\Requests\UpdateVesselAssignmentRequest;
 use App\Http\Resources\EmployeeResource;
 use App\Models\Employee;
 use App\Services\EmployeeService;
@@ -181,6 +182,31 @@ class EmployeeController extends Controller
                 'permissions' => $request->getPermissions(),
             ];
             $employee = $this->employeeService->updatePermissions($formData, $employee);
+            $this->response['data'] = new EmployeeResource($employee);
+        } catch (Exception $e) {
+            $this->response = [
+                'error' => $e->getMessage(),
+                'code' => 500,
+            ];
+        }
+
+        return response()->json($this->response, $this->response['code']);
+    }
+
+    /**
+     * Updates employee vessel assignments
+     *
+     * @param UpdateVesselAssignmentRequest $request
+     * @param Employee $employee
+     * @return JsonResponse
+     */
+    public function updateVesselAssignment(UpdateVesselAssignmentRequest $request, Employee $employee): JsonResponse
+    {
+        try {
+            $formData = [
+                'vessel_ids' => $request->getVesselIds(),
+            ];
+            $employee = $this->employeeService->updateAssignedVessels($formData, $employee);
             $this->response['data'] = new EmployeeResource($employee);
         } catch (Exception $e) {
             $this->response = [

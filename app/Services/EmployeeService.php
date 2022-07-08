@@ -167,7 +167,7 @@ class EmployeeService
     }
 
     /**
-     * Updates employee in the database
+     * Updates employee permissions in the database
      *
      * @param array $params
      * @param Employee $employee
@@ -177,6 +177,20 @@ class EmployeeService
     public function updatePermissions(array $params, Employee $employee): Employee
     {
         $employee->user->syncPermissions($params['permissions']);
+        return $employee;
+    }
+
+    /**
+     * Updates employee assigned vessels in the database
+     *
+     * @param array $params
+     * @param Employee $employee
+     * @return Employee
+     * @throws
+     */
+    public function updateAssignedVessels(array $params, Employee $employee): Employee
+    {
+        $employee->vessels()->sync($params['vessel_ids']);
         return $employee;
     }
 }

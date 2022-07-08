@@ -46,6 +46,7 @@ class EmployeeResource extends JsonResource
             'position' => $employee->getAttribute('position'),
             'is_admin' => $user->hasRole(config('user.roles.admin')),
             'permissions' => (object)$parsedAssignedPermissions,
+            'vessels' => VesselResource::collection($employee->vessels)
         ];
     }
 }
