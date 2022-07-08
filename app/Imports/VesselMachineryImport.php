@@ -8,7 +8,6 @@ use App\Models\MachineryModel;
 use App\Models\Rank;
 use App\Models\Vessel;
 use App\Models\VesselMachinery;
-use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -33,11 +32,11 @@ class VesselMachineryImport implements ToModel, WithHeadingRow, WithValidation
         /** @var Rank $inchargeRank */
         $inchargeRank = Rank::where('name', $row['incharge_rank'])->first();
 
-        if (isset($row['model'])) {
+        if ($row['model']) {
             /** @var MachineryModel $machineryModel */
             $machineryModel = MachineryModel::firstOrCreate(['name' => $row['model']]);
         }
-        if (isset($row['maker'])) {
+        if ($row['maker']) {
             /** @var MachineryMaker $machineryMaker */
             $machineryMaker = MachineryMaker::firstOrCreate(['name' => $row['maker']]);
         }

@@ -69,11 +69,11 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
         return new VesselMachinerySubCategory([
             'code' => $row['code'],
             'vessel_machinery_id' => $vesselMachinery->getAttribute('id'),
-            'interval_id' => isset($row['interval']) ? $interval->getAttribute('id') : null,
-            'installed_date' => isset($row['commissioning_date']) ? Carbon::create($row['commissioning_date']) : null,
+            'interval_id' => $row['interval'] ? $interval->getAttribute('id') : null,
+            'installed_date' => $row['commissioning_date'] ? Carbon::create($row['commissioning_date']) : null,
             'due_date' => $dueDate,
             'machinery_sub_category_id' => $machinerySubCategory->getAttribute('id'),
-            'machinery_sub_category_description_id' => isset($row['description'])
+            'machinery_sub_category_description_id' => $row['description']
                 ? $description->getAttribute('id')
                 : null,
         ]);
