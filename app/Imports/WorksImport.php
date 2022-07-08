@@ -107,9 +107,12 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
                 } else {
                     if ($work->getAttribute('last_done')) {
                         $lastDoneDate = Carbon::create($work->getAttribute('last_done'));
-                        $runningHours = $work->getAttribute('running_hours');
 
-                        $dueDate = $this->getDueDate($lastDoneDate, $intervalUnit->getAttribute('name'), $runningHours);
+                        $dueDate = $this->getDueDate(
+                            $lastDoneDate,
+                            $intervalUnit->getAttribute('name'),
+                            $intervalUnit->getAttribute('value')
+                        );
                     }
                 }
 
