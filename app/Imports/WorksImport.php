@@ -67,7 +67,7 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
         $work = new Work([
             'vessel_machinery_sub_category_id' => $vesselMachinerySubCategory->getAttribute('id'),
             'last_done' => Carbon::create($row['last_done_date']),
-            'running_hours' => $row['last_done_running_hours'] ?: 0,
+            'running_hours' => $row['last_done_running_hours'],
             'instructions' => $row['instructions'],
             'remarks' => $row['remarks'],
             'creator_id' => $user->getAttribute('id'),
@@ -159,7 +159,7 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
      * @param string $intervalValue
      * @return Carbon
      */
-    public function getDueDate(Carbon $date, string $intervalUnit, string $intervalValue): ?Carbon
+    public function getDueDate(Carbon $date, string $intervalUnit, int $intervalValue): ?Carbon
     {
         switch ($intervalUnit) {
             case config('interval.units.days'):

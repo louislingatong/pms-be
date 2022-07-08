@@ -131,7 +131,7 @@ class WorkService
                 $work = $this->work->create([
                     'vessel_machinery_sub_category_id' => $id,
                     'last_done' => $params['last_done'],
-                    'running_hours' => $params['running_hours'] ?: 0,
+                    'running_hours' => $params['running_hours'],
                     'instructions' => $params['instructions'],
                     'remarks' => $params['remarks'],
                     'creator_id' => $params['creator_id'],
