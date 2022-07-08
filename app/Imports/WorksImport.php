@@ -93,7 +93,7 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
                     $runningHour = $vesselMachinery->currentRunningHour;
 
                     if (!($runningHour instanceof RunningHour)) {
-                        throw new RunningHourNotFoundException();
+                        throw new RunningHourNotFoundException('Unable to retrieve running hour of code ' . $vesselMachinerySubCategory->getAttribute('code'));
                     }
 
                     if ($runningHour->getAttribute('updating_date')
