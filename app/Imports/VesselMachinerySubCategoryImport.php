@@ -122,18 +122,22 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
             switch ($intervalUnit->getAttribute('name')) {
                 case config('interval.units.days'):
                     $dueDate->addDays($interval->getAttribute('value'));
+                    $dueDate->subDay();
                     break;
                 case config('interval.units.hours'):
                     $dueDate->addHours($interval->getAttribute('value'));
                     break;
                 case config('interval.units.weeks'):
                     $dueDate->addWeeks($interval->getAttribute('value'));
+                    $dueDate->subDay();
                     break;
                 case config('interval.units.months'):
                     $dueDate->addMonths($interval->getAttribute('value'));
+                    $dueDate->subDay();
                     break;
                 case config('interval.units.years'):
                     $dueDate->addYears($interval->getAttribute('value'));
+                    $dueDate->subDay();
                     break;
             }
             $dueDate->subDay();
