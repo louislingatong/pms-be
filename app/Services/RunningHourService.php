@@ -55,12 +55,12 @@ class RunningHourService
         $skip = ($page > 1) ? ($page * $limit - $limit) : 0;
 
         $query = $this->vesselMachinery->whereHas('vessel', function ($q) use ($conditions) {
-            $q->where('name', '=', $conditions['vessel']);
+            $q->where('name', $conditions['vessel']);
         });
 
         if ($conditions['department']) {
             $query = $query->whereHas('machinery.department', function ($q) use ($conditions) {
-                $q->where('name', '=', $conditions['department']);
+                $q->where('name', $conditions['department']);
             });
         }
 

@@ -70,13 +70,13 @@ class WorkService
 
         if ($conditions['department']) {
             $query = $query->whereHas('vesselMachinery.machinery.department', function ($q) use ($conditions) {
-                $q->where('name', '=', $conditions['department']);
+                $q->where('name', $conditions['department']);
             });
         }
 
         if ($conditions['machinery']) {
             $query = $query->whereHas('vesselMachinery.machinery', function ($q) use ($conditions) {
-                $q->where('name', '=', $conditions['machinery']);
+                $q->where('name', $conditions['machinery']);
             });
         }
 

@@ -46,7 +46,13 @@ class VesselService
 
         $skip = ($page > 1) ? ($page * $limit - $limit) : 0;
 
-        $query = $this->vessel;
+        $user = auth()->user();
+
+        if (!$user->hasRole(config('user.roles.admin'))) {
+            $query = $user->employee->vessels();
+        } else {
+            $query = $this->vessel;
+        }
 
         if ($conditions['keyword']) {
             $query = $query->search($conditions['keyword']);

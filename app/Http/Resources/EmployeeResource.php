@@ -27,12 +27,6 @@ class EmployeeResource extends JsonResource
             $assignedPermissions = $assignedPermissions->merge($role->permissions);
         }
 
-        $parsedAssignedPermissions = [];
-
-        foreach ($assignedPermissions as $permission) {
-            $parsedAssignedPermissions[$permission->name] = $permission->id;
-        }
-
         return [
             'id' => $employee->getAttribute('id'),
             'first_name' => $user->getAttribute('first_name'),
@@ -45,7 +39,7 @@ class EmployeeResource extends JsonResource
             'id_number' => $employee->getAttribute('id_number'),
             'position' => $employee->getAttribute('position'),
             'is_admin' => $user->hasRole(config('user.roles.admin')),
-            'permissions' => (object)$parsedAssignedPermissions,
+            'permissions' => PermissionResource::collection($assignedPermissions),
             'vessels' => VesselResource::collection($employee->vessels)
         ];
     }
