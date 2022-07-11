@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\VesselNotFoundException;
 use App\Http\Resources\VesselResource;
+use App\Models\Employee;
 use App\Models\Vessel;
 use App\Models\VesselOwner;
 use Exception;
@@ -48,7 +49,9 @@ class VesselService
 
         $user = auth()->user();
 
-        if (!$user->hasRole(config('user.roles.admin'))) {
+        $employee = $user->employee;
+
+        if ($employee instanceof Employee) {
             $query = $user->employee->vessels();
         } else {
             $query = $this->vessel;
