@@ -52,7 +52,7 @@ class MachinerySubCategoryService
         }
 
         $results = $query->skip($skip)
-            ->orderBy('id', 'ASC')
+            ->orderBy('id')
             ->paginate($limit);
 
         $urlParams = ['keyword' => $conditions['keyword'], 'limit' => $limit];

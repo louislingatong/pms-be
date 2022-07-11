@@ -70,9 +70,7 @@ class VesselMachineryService
         }
 
         $results = $query->skip($skip)
-            ->with(['machinery' => function ($q) {
-                $q->orderBy('vessel_department_id', 'ASC');
-            }])
+            ->orderBy('machinery_id')
             ->paginate($limit);
 
         $urlParams = ['keyword' => $conditions['keyword'], 'limit' => $limit];
