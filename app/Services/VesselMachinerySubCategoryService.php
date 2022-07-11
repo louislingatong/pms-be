@@ -79,7 +79,9 @@ class VesselMachinerySubCategoryService
             /** @var Interval $interval */
             $interval = Interval::whereName($params['interval'])->first();
 
-            $params['due_date'] = $this->getDueDate($params['installed_date'], $interval);
+            $params['due_date'] = $interval->getAttribute('value')
+                ? $this->getDueDate($params['installed_date'], $interval)
+                : null;
 
             if ($params['description']) {
                 /** @var MachinerySubCategory $machinerySubCategory */
@@ -178,7 +180,7 @@ class VesselMachinerySubCategoryService
         $dueDate = Carbon::create($date);
         /** @var IntervalUnit $intervalUnit */
         $intervalUnit = $interval->unit;
-        if ($intervalUnit instanceof IntervalUnit) {
+        if ($date) {
             switch ($intervalUnit->getAttribute('name')) {
                 case config('interval.units.days'):
                     $dueDate->addDays($interval->getAttribute('value'));

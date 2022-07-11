@@ -53,7 +53,9 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
                 throw new IntervalNotFoundException('Unable to retrieve interval ' . $row['interval']);
             }
 
-            $dueDate = $this->getDueDate($row['commissioning_date'], $interval);
+            $dueDate = $interval->getAttribute('value')
+                ? $this->getDueDate($row['commissioning_date'], $interval)
+                : null;
         }
 
         $description = null;
@@ -117,7 +119,7 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
     {
         /** @var IntervalUnit $intervalUnit */
         $intervalUnit = $interval->unit;
-        if ($date && $intervalUnit instanceof IntervalUnit) {
+        if ($date) {
             $dueDate = Carbon::create($date);
             switch ($intervalUnit->getAttribute('name')) {
                 case config('interval.units.days'):
