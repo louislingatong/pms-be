@@ -77,7 +77,9 @@ class RunningHourService
         }
 
         $results = $query->skip($skip)
-            ->orderBy('id', 'ASC')
+            ->with(['machinery' => function ($q) {
+                $q->orderBy('vessel_department_id', 'DESC');
+            }])
             ->paginate($limit);
 
         $urlParams = ['keyword' => $conditions['keyword'], 'limit' => $limit];
