@@ -205,7 +205,7 @@ class VesselMachinerySubCategoryService
                     $dueDate->addYears($years);
                     $additionalMonths = 12 * ($interval->getAttribute('value') - $years);
                     if ($additionalMonths) {
-                        $date->addMonths($additionalMonths);
+                        $dueDate->addMonths($additionalMonths);
                     }
                     $dueDate->subDay();
                     break;
