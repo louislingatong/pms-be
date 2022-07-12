@@ -168,7 +168,8 @@ class WorkService
                             }
 
                             if ($runningHour->getAttribute('updating_date')
-                                && $runningHour->getAttribute('running_hours')) {
+                                && $runningHour->getAttribute('running_hours')
+                                && $work->getAttribute('running_hours')) {
                                 $updatingDate = Carbon::create($runningHour->getAttribute('updating_date'));
                                 $remainingIntervals = $runningHour->getAttribute('running_hours') - $work->getAttribute('running_hours');
                                 $remainingIntervals = $interval->getAttribute('value') - $remainingIntervals;
