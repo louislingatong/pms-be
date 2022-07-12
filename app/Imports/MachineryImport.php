@@ -4,32 +4,34 @@ namespace App\Imports;
 
 use App\Models\Machinery;
 use App\Models\VesselDepartment;
-use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Importable;
-use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class MachineryImport implements ToCollection, WithHeadingRow, WithValidation
+class MachineryImport implements ToModel, WithHeadingRow, WithValidation
 {
     use Importable;
 
     /**
-     * @param Collection $collection
+     * @param array $row
+     * @return Machinery
      */
-    public function collection(Collection $collection): void
+    public function model(array $row): ?Machinery
     {
-        foreach ($collection as $row) {
+        $machinery = Machinery::where('code_name', $row['code_name'])
+            ->where('name', $row['name'])
+            ->first();
+
+        if (is_null($machinery)) {
             /** @var VesselDepartment $department */
             $department = VesselDepartment::where('name', $row['department'])->first();
 
-            $formData = [
+            return new Machinery([
                 'vessel_department_id' => $department->getAttribute('id'),
-                'name' => $row['name'],
                 'code_name' => $row['code_name'],
-            ];
-
-            Machinery::create($formData);
+                'name' => $row['name'],
+            ]);
         }
     }
 
