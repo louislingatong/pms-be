@@ -156,8 +156,8 @@ class VesselMachineryExport implements FromArray, WithHeadings, WithMapping, Wit
                 $event->sheet->setCellValue('C1', $vessel->getAttribute('name'));
                 $event->sheet->setCellValue('C2', $vessel->getAttribute('flag'));
                 $event->sheet->setCellValue('C3', $machinery->getAttribute('name'));
-                $event->sheet->setCellValue('C4', $model->getAttribute('name'));
-                $event->sheet->setCellValue('C5', $maker->getAttribute('name'));
+                $event->sheet->setCellValue('C4', $model ? $model->getAttribute('name') : '');
+                $event->sheet->setCellValue('C5', $maker ? $maker->getAttribute('name') : '');
 
                 $event->sheet->setCellValue('E1', '');
                 $event->sheet->setCellValue('E2', $vessel->getAttribute('imo_no'));
