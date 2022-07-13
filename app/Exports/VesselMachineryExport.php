@@ -18,13 +18,14 @@ use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class VesselMachineryExport implements FromArray, WithHeadings, WithMapping, WithEvents, WithCustomStartCell, WithColumnWidths
+class VesselMachineryExport implements FromArray, WithTitle, WithHeadings, WithMapping, WithEvents, WithCustomStartCell, WithColumnWidths
 {
     protected $vesselMachinery;
 
@@ -39,6 +40,16 @@ class VesselMachineryExport implements FromArray, WithHeadings, WithMapping, Wit
     public function array(): array
     {
         return $this->vesselMachinery->subCategories->toArray();
+    }
+
+    /**
+     * @return string
+     */
+    public function title(): string
+    {
+        /** @var Machinery $machinery */
+        $machinery = $this->vesselMachinery->machinery;
+        return $machinery->getAttribute('name');
     }
 
     /**
@@ -156,8 +167,14 @@ class VesselMachineryExport implements FromArray, WithHeadings, WithMapping, Wit
                 $event->sheet->setCellValue('C1', $vessel->getAttribute('name'));
                 $event->sheet->setCellValue('C2', $vessel->getAttribute('flag'));
                 $event->sheet->setCellValue('C3', $machinery->getAttribute('name'));
-                $event->sheet->setCellValue('C4', $model ? $model->getAttribute('name') : '');
-                $event->sheet->setCellValue('C5', $maker ? $maker->getAttribute('name') : '');
+                $event->sheet->setCellValue('C4', ($model instanceof MachineryModel)
+                    ? $model->getAttribute('name')
+                    : ''
+                );
+                $event->sheet->setCellValue('C5', ($maker instanceof MachineryMaker)
+                    ? $maker->getAttribute('name')
+                    : ''
+                );
 
                 $event->sheet->setCellValue('E1', '');
                 $event->sheet->setCellValue('E2', $vessel->getAttribute('imo_no'));
