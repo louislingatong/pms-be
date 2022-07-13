@@ -92,13 +92,13 @@ class UserService
 
         try {
             $params['password'] = md5(Str::random(8));
-            $status = UserStatus::where('name', config('user.statuses.pending'))->first();
+            $pendingStatus = UserStatus::where('name', config('user.statuses.pending'))->first();
 
-            if (!($status instanceof UserStatus)) {
+            if (!($pendingStatus instanceof UserStatus)) {
                 throw new UserStatusNotFoundException;
             }
 
-            $params['user_status_id'] = $status->id;
+            $params['user_status_id'] = $pendingStatus->getAttribute('id');
             $user = $this->user->create($params);
 
             if (!($user instanceof User)) {
@@ -228,6 +228,23 @@ class UserService
         if (!($user instanceof User)) {
             throw new UserNotFoundException;
         }
+
+        return $user;
+    }
+
+    /**
+     * Updates user status in the database
+     *
+     * @param UserStatus $status
+     * @param User $user
+     * @return User
+     * @throws
+     */
+    public function updateStatus(UserStatus $status, User $user): User
+    {
+        $user->update([
+            'user_status_id' => $status->getAttribute('id'),
+        ]);
 
         return $user;
     }

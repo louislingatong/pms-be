@@ -11,10 +11,12 @@ Route::group(['middleware' => ['auth:api', 'permission:employee_access']], funct
         ->middleware('permission:employee_show');
     Route::put('{employee}', 'EmployeeController@update')
         ->middleware('permission:employee_edit');
-    Route::delete('{employee}', 'EmployeeController@delete')
-        ->middleware('permission:employee_delete');
     Route::put('{employee}/edit-permissions', 'EmployeeController@updatePermissions')
         ->middleware('permission:employee_edit');
     Route::put('{employee}/assign-vessels', 'EmployeeController@updateVesselAssignment')
         ->middleware('permission:employee_edit');
+    Route::patch('/activate', 'EmployeeController@activate')
+        ->middleware('permission:employee_delete');
+    Route::patch('/deactivate', 'EmployeeController@deactivate')
+        ->middleware('permission:employee_delete');
 });

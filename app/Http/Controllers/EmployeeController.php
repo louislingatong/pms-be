@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ActivateDeactivateEmployeesRequest;
 use App\Http\Requests\CreateEmployeeRequest;
 use App\Http\Requests\SearchEmployeeRequest;
 use App\Http\Requests\UpdateEmployeePermissionRequest;
@@ -151,13 +152,13 @@ class EmployeeController extends Controller
     /**
      * Delete employee
      *
-     * @param Employee $interval
+     * @param Employee $employee
      * @return JsonResponse
      */
-    public function delete(Employee $interval): JsonResponse
+    public function delete(Employee $employee): JsonResponse
     {
         try {
-            $this->response['deleted'] = $this->employeeService->delete($interval);
+            $this->response['deleted'] = $this->employeeService->delete($employee);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),
@@ -208,6 +209,54 @@ class EmployeeController extends Controller
             ];
             $employee = $this->employeeService->updateAssignedVessels($formData, $employee);
             $this->response['data'] = new EmployeeResource($employee);
+        } catch (Exception $e) {
+            $this->response = [
+                'error' => $e->getMessage(),
+                'code' => 500,
+            ];
+        }
+
+        return response()->json($this->response, $this->response['code']);
+    }
+
+    /**
+     * Activate employee/s
+     *
+     * @param ActivateDeactivateEmployeesRequest $request
+     * @return JsonResponse
+     */
+    public function activate(ActivateDeactivateEmployeesRequest $request): JsonResponse
+    {
+        try {
+            $formData = [
+                'status' => config('user.statuses.active'),
+                'employee_ids' => $request->getEmployeeIds(),
+            ];
+            $this->response['activated'] = $this->employeeService->updateStatus($formData);
+        } catch (Exception $e) {
+            $this->response = [
+                'error' => $e->getMessage(),
+                'code' => 500,
+            ];
+        }
+
+        return response()->json($this->response, $this->response['code']);
+    }
+
+    /**
+     * Deactivate employee/s
+     *
+     * @param ActivateDeactivateEmployeesRequest $request
+     * @return JsonResponse
+     */
+    public function deactivate(ActivateDeactivateEmployeesRequest $request): JsonResponse
+    {
+        try {
+            $formData = [
+                'status' => config('user.statuses.inactive'),
+                'employee_ids' => $request->getEmployeeIds(),
+            ];
+            $this->response['deactivated'] = $this->employeeService->updateStatus($formData);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),

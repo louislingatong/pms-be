@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Exceptions\AuthModelNotSetException;
 use App\Exceptions\InvalidUserCredentialsException;
 use App\Exceptions\InvalidUserPasswordException;
+use App\Exceptions\UserInactiveException;
 use App\Exceptions\UserLockedException;
 use App\Exceptions\UserPendingException;
 use App\Exceptions\UserStatusNotFoundException;
@@ -38,6 +39,7 @@ class UserRepository implements UserRepositoryInterface
         $this->statusError = [
             config('user.statuses.pending') => new UserPendingException,
             config('user.statuses.locked') => new UserLockedException,
+            config('user.statuses.inactive') => new UserInactiveException,
         ];
     }
 

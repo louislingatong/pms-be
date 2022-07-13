@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\InvalidPasswordResetTokenException;
+use App\Exceptions\UserInactiveException;
 use App\Mail\ResetPassword;
 use App\Mail\ResetPasswordFinish;
 use App\Models\PasswordReset;
@@ -60,20 +61,27 @@ class PasswordService
         }
 
         // get active user status
-        $status = UserStatus::where('name', config('user.statuses.active'))->first();
+        $activeStatus = UserStatus::where('name', config('user.statuses.active'))->first();
 
-        if (!($status instanceof UserStatus)) {
+        if (!($activeStatus instanceof UserStatus)) {
             throw new RuntimeException('Unable to retrieve user status');
         }
 
         // retrieve user to fetch new password
         $user = $this->userService->findByEmail($token->email);
 
+        /** @var UserStatus $userStatus */
+        $userStatus = $user->status;
+
+        if ($userStatus->getAttribute('name') === config('user.statuses.inactive')) {
+            throw new UserInactiveException();
+        }
+
         // update user password
         $user->update([
             'password' => Hash::make($data['password']),
             'login_attempts' => 0, // reset failed attempts
-            'user_status_id' => $status->id, // update user status
+            'user_status_id' => $activeStatus->getAttribute('id'), // update user status
         ]);
 
         // revoke the token

@@ -6,6 +6,7 @@ use App\Exceptions\IntervalNotFoundException;
 use App\Http\Resources\EmployeeResource;
 use App\Models\Employee;
 use App\Models\EmployeeDepartment;
+use App\Models\UserStatus;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -192,5 +193,26 @@ class EmployeeService
     {
         $employee->vessels()->sync($params['vessel_ids']);
         return $employee;
+    }
+
+    /**
+     * Updates the employee status in the database
+     *
+     * @param array $params
+     * @return bool
+     * @throws
+     */
+    public function updateStatus(array $params): bool
+    {
+        /** @var UserStatus $userStatus */
+        $status = UserStatus::where('name', $params['status'])->first();
+
+        $this->employee->whereIn('id', $params['employee_ids'])
+            ->get()
+            ->each(function ($employee) use ($status) {
+                $this->userService->updateStatus($status, $employee->user);
+            });
+
+        return true;
     }
 }
