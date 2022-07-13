@@ -240,7 +240,9 @@ class WorkService
             $query = $query->search($conditions['keyword']);
         }
 
-        return $query->with('interval', 'vesselMachinery', 'subCategory', 'description', 'currentWork')->get();
+        $works = $query->with('interval', 'vesselMachinery', 'subCategory', 'description', 'currentWork')->get();
+
+        return $works->groupBy('vesselMachinery.machinery.name');
     }
 
     /**

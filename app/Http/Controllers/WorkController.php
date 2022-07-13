@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\WorkExport;
+use App\Exports\AllWorksExport;
 use App\Exports\WorkHistoryExport;
 use App\Http\Requests\CountWorksRequest;
 use App\Http\Requests\CreateWorkRequest;
@@ -161,7 +161,7 @@ class WorkController extends Controller
 
         $results = $this->workService->export($conditions);
 
-        return Excel::download(new WorkExport($results->toArray(), $request->getVessel()), 'Works.xls');
+        return Excel::download(new AllWorksExport($results->toArray(), $request->getVessel()), 'Works.xls');
     }
 
     /**

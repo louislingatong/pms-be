@@ -18,6 +18,9 @@ Route::group(['middleware' => ['auth:api', 'permission:vessel_machinery_access']
     Route::post('/import', 'VesselMachineryController@import')
         ->middleware('permission:vessel_machinery_import');
 
+    Route::get('/export-all', 'VesselMachineryController@export')
+        ->middleware('permission:vessel_machinery_export');
+
     Route::get('{vesselMachinery}/export', 'VesselMachineryController@exportVesselMachinery')
         ->middleware('permission:vessel_machinery_export');
 

@@ -15,6 +15,7 @@ use App\Models\VesselMachinery;
 use App\Models\VesselMachinerySubCategory;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class VesselMachineryService
@@ -300,6 +301,32 @@ class VesselMachineryService
         }
 
         return $vesselMachinery;
+    }
+
+    /**
+     * List of vessel machineries with sub categories by conditions
+     *
+     * @param array $conditions
+     * @return Collection
+     * @throws
+     */
+    public function export(array $conditions): Collection
+    {
+        $query = $this->vesselMachinery->whereHas('vessel', function ($q) use ($conditions) {
+            $q->where('name', '=', $conditions['vessel']);
+        });
+
+        if ($conditions['department']) {
+            $query = $query->whereHas('machinery.department', function ($q) use ($conditions) {
+                $q->where('name', '=', $conditions['department']);
+            });
+        }
+
+        if ($conditions['keyword']) {
+            $query = $query->search($conditions['keyword']);
+        }
+
+        return $query->get();
     }
 
     /**

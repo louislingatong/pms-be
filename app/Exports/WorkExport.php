@@ -10,21 +10,24 @@ use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class WorkExport implements FromArray, WithHeadings, WithMapping, WithEvents, WithCustomStartCell, WithColumnWidths
+class WorkExport implements FromArray, WithTitle, WithHeadings, WithMapping, WithEvents, WithCustomStartCell, WithColumnWidths
 {
     protected $works;
     protected $vesselName;
+    protected $sheetName;
 
-    public function __construct(array $works, string $vesselName)
+    public function __construct(array $works, string $vesselName, string $sheetName)
     {
         $this->works = $works;
         $this->vesselName = $vesselName;
+        $this->sheetName = $sheetName;
     }
 
     /**
@@ -33,6 +36,14 @@ class WorkExport implements FromArray, WithHeadings, WithMapping, WithEvents, Wi
     public function array(): array
     {
         return $this->works;
+    }
+
+    /**
+     * @return string
+     */
+    public function title(): string
+    {
+        return $this->sheetName;
     }
 
     /**

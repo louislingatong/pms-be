@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AllVesselMachineriesExport;
 use App\Exports\VesselMachineryExport;
 use App\Http\Requests\CreateVesselMachineryRequest;
 use App\Http\Requests\DeleteVesselMachineriesRequest;
 use App\Http\Requests\EditVesselMachinerySubCategoryRequest;
+use App\Http\Requests\ExportVesselMachineryRequest;
 use App\Http\Requests\ImportRequest;
 use App\Http\Requests\SearchVesselMachineryRequest;
 use App\Http\Requests\UpdateVesselMachineryRequest;
@@ -230,6 +232,25 @@ class VesselMachineryController extends Controller
         }
 
         return response()->json($this->response, $this->response['code']);
+    }
+
+    /**
+     * @param ExportVesselMachineryRequest $request
+     * @return BinaryFileResponse
+     */
+    public function export(ExportVesselMachineryRequest $request): BinaryFileResponse
+    {
+        $request->validated();
+
+        $conditions = [
+            'vessel' => $request->getVessel(),
+            'department' => $request->getDepartment(),
+            'keyword' => $request->getKeyword(),
+        ];
+
+        $results = $this->vesselMachineryService->export($conditions);
+
+        return Excel::download(new AllVesselMachineriesExport($results), 'All Vessel Machinery.xls');
     }
 
     /**
