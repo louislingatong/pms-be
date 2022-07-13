@@ -33,6 +33,8 @@ class MachineryImport implements ToModel, WithHeadingRow, WithValidation
                 'name' => $row['name'],
             ]);
         }
+
+        return null;
     }
 
     /**
