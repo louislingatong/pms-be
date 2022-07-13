@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Exceptions\IntervalNotFoundException;
 use App\Exceptions\IntervalUnitNotFoundException;
 use App\Http\Resources\IntervalResource;
 use App\Models\Interval;
@@ -129,18 +128,26 @@ class IntervalService
     }
 
     /**
-     * Deletes the interval in the database
+     * Deletes the interval/s in the database
      *
-     * @param Interval $interval
+     * @param array $params
      * @return bool
      * @throws
      */
-    public function delete(Interval $interval): bool
+    public function delete(array $params): bool
     {
-        if (!($interval instanceof Interval)) {
-            throw new IntervalNotFoundException();
+
+        DB::beginTransaction();
+
+        try {
+            $this->interval->whereIn('id', $params['interval_ids'])->delete();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+
+            throw $e;
         }
-        $interval->delete();
+
         return true;
     }
 }

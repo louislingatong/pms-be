@@ -11,6 +11,6 @@ Route::group(['middleware' => ['auth:api', 'permission:vessel_access']], functio
         ->middleware('permission:vessel_show');
     Route::put('{vessel}', 'VesselController@update')
         ->middleware('permission:vessel_edit');
-    Route::delete('{vessel}', 'VesselController@delete')
+    Route::delete('/', 'VesselController@delete')
         ->middleware('permission:vessel_delete');
 });

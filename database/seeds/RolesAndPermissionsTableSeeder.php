@@ -56,7 +56,6 @@ class RolesAndPermissionsTableSeeder extends Seeder
             'vessel_machinery_export',
             'vessel_sub_category_edit',
             'vessel_sub_category_import',
-            'vessel_sub_category_export',
             'interval_access',
             'interval_create',
             'interval_edit',

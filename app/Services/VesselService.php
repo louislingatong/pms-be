@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Exceptions\VesselNotFoundException;
 use App\Http\Resources\VesselResource;
 use App\Models\Employee;
 use App\Models\Vessel;
@@ -125,18 +124,26 @@ class VesselService
     }
 
     /**
-     * Deletes the vessel in the database
+     * Deletes the vessel/s in the database
      *
-     * @param Vessel $vessel
+     * @param array $params
      * @return bool
      * @throws
      */
-    public function delete(Vessel $vessel): bool
+    public function delete(array $params): bool
     {
-        if (!($vessel instanceof Vessel)) {
-            throw new VesselNotFoundException();
+
+        DB::beginTransaction();
+
+        try {
+            $this->vessel->whereIn('id', $params['vessel_ids'])->delete();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+
+            throw $e;
         }
-        $vessel->delete();
+
         return true;
     }
 }

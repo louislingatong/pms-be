@@ -11,7 +11,7 @@ Route::group(['middleware' => ['auth:api', 'permission:interval_access']], funct
         ->middleware('permission:interval_show');
     Route::put('{interval}', 'IntervalController@update')
         ->middleware('permission:interval_edit');
-    Route::delete('{interval}', 'IntervalController@delete')
+    Route::delete('/', 'IntervalController@delete')
         ->middleware('permission:interval_delete');
     Route::post('/import', 'IntervalController@import')
         ->middleware('permission:interval_import');

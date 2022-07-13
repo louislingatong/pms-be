@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateIntervalRequest;
+use App\Http\Requests\DeleteIntervalsRequest;
 use App\Http\Requests\ImportRequest;
 use App\Http\Requests\SearchIntervalRequest;
 use App\Http\Requests\UpdateIntervalRequest;
@@ -140,15 +141,18 @@ class IntervalController extends Controller
     }
 
     /**
-     * Delete interval
+     * Delete interval/s
      *
-     * @param Interval $interval
+     * @param DeleteIntervalsRequest $request
      * @return JsonResponse
      */
-    public function delete(Interval $interval): JsonResponse
+    public function delete(DeleteIntervalsRequest $request): JsonResponse
     {
         try {
-            $this->response['deleted'] = $this->intervalService->delete($interval);
+            $formData = [
+                'interval_ids' => $request->getVesselIds(),
+            ];
+            $this->response['delete'] = $this->intervalService->delete($formData);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),

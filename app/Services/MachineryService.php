@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Exceptions\MachineryNotFoundException;
 use App\Http\Resources\MachineryWithSubCategoriesResource;
 use App\Models\Machinery;
 use App\Models\MachinerySubCategory;
@@ -130,18 +129,26 @@ class MachineryService
     }
 
     /**
-     * Deletes the machinery in the database
+     * Deletes the machinery/s in the database
      *
-     * @param Machinery $machinery
+     * @param array $params
      * @return bool
      * @throws
      */
-    public function delete(Machinery $machinery): bool
+    public function delete(array $params): bool
     {
-        if (!($machinery instanceof Machinery)) {
-            throw new MachineryNotFoundException();
+
+        DB::beginTransaction();
+
+        try {
+            $this->machinery->whereIn('id', $params['machinery_ids'])->delete();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+
+            throw $e;
         }
-        $machinery->delete();
+
         return true;
     }
 
@@ -157,5 +164,19 @@ class MachineryService
     {
         $machinery->subCategories()->save(new MachinerySubCategory($params));
         return $machinery;
+    }
+
+    /**
+     * Remove new sub category
+     *
+     * @param array $params
+     * @param Machinery $machinery
+     * @return bool
+     * @throws
+     */
+    public function removeSubCategory(array $params, Machinery $machinery): bool
+    {
+        $machinery->subCategories()->whereIn('id', $params['sub_category_ids'])->delete();
+        return true;
     }
 }

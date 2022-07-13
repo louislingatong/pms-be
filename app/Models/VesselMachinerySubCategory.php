@@ -36,7 +36,8 @@ class VesselMachinerySubCategory extends Model
      */
     public function interval(): BelongsTo
     {
-        return $this->belongsTo(Interval::class, 'interval_id');
+        return $this->belongsTo(Interval::class, 'interval_id')
+            ->withTrashed();
     }
 
     /**
@@ -44,9 +45,11 @@ class VesselMachinerySubCategory extends Model
      *
      * @return BelongsTo VesselMachinery
      */
+
     public function vesselMachinery(): BelongsTo
     {
-        return $this->belongsTo(VesselMachinery::class, 'vessel_machinery_id');
+        return $this->belongsTo(VesselMachinery::class, 'vessel_machinery_id')
+            ->withTrashed();
     }
 
     /**
@@ -56,7 +59,8 @@ class VesselMachinerySubCategory extends Model
      */
     public function subCategory(): BelongsTo
     {
-        return $this->belongsTo(MachinerySubCategory::class, 'machinery_sub_category_id');
+        return $this->belongsTo(MachinerySubCategory::class, 'machinery_sub_category_id')
+            ->withTrashed();
     }
 
     /**
@@ -64,6 +68,7 @@ class VesselMachinerySubCategory extends Model
      *
      * @return BelongsTo MachinerySubCategoryDescription
      */
+
     public function description(): BelongsTo
     {
         return $this->belongsTo(MachinerySubCategoryDescription::class, 'machinery_sub_category_description_id');

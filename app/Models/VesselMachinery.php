@@ -33,7 +33,8 @@ class VesselMachinery extends Model
      */
     public function vessel(): BelongsTo
     {
-        return $this->belongsTo(Vessel::class, 'vessel_id');
+        return $this->belongsTo(Vessel::class, 'vessel_id')
+            ->withTrashed();
     }
 
     /**
@@ -43,7 +44,8 @@ class VesselMachinery extends Model
      */
     public function machinery(): BelongsTo
     {
-        return $this->belongsTo(Machinery::class, 'machinery_id');
+        return $this->belongsTo(Machinery::class, 'machinery_id')
+            ->withTrashed();;
     }
 
     /**
@@ -53,7 +55,8 @@ class VesselMachinery extends Model
      */
     public function inchargeRank(): BelongsTo
     {
-        return $this->belongsTo(Rank::class, 'incharge_rank_id');
+        return $this->belongsTo(Rank::class, 'incharge_rank_id')
+            ->withTrashed();
     }
 
     /**

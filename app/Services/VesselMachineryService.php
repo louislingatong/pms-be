@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Exceptions\VesselMachineryNotFoundException;
 use App\Http\Resources\VesselMachineryWithoutSubCategoriesResource;
 use App\Models\Interval;
 use App\Models\IntervalUnit;
@@ -189,18 +188,25 @@ class VesselMachineryService
     }
 
     /**
-     * Deletes the vessel machinery in the database
+     * Deletes the vessel machinery/s in the database
      *
-     * @param VesselMachinery $vesselMachinery
+     * @param array $params
      * @return bool
      * @throws
      */
-    public function delete(VesselMachinery $vesselMachinery): bool
+    public function delete(array $params): bool
     {
-        if (!($vesselMachinery instanceof VesselMachinery)) {
-            throw new VesselMachineryNotFoundException();
+        DB::beginTransaction();
+
+        try {
+            $this->vesselMachinery->whereIn('id', $params['vessel_machinery_ids'])->delete();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+
+            throw $e;
         }
-        $vesselMachinery->delete();
+
         return true;
     }
 
@@ -221,16 +227,18 @@ class VesselMachineryService
             $removedVesselMachinerySubCategories = [];
             if (is_array($params['vessel_machinery_sub_categories'])) {
                 foreach ($params['vessel_machinery_sub_categories'] as $subCategory) {
-                    if (!isset($subCategory['code'])
-                        && !isset($subCategory['description'])
-                        && !isset($subCategory['interval'])) {
+                    if (!$subCategory['code']
+                        && !$subCategory['description']
+                        && !$subCategory['interval']) {
                         $removedVesselMachinerySubCategories[] = $subCategory['machinery_sub_category_id'];
                         continue;
                     }
                     /** @var Interval $interval */
                     $interval = Interval::whereName($subCategory['interval'])->first();
 
-                    $dueDate = $this->getDueDate($subCategory['installed_date'], $interval);
+                    $dueDate = $interval->getAttribute('value')
+                        ? $this->getDueDate($params['installed_date'], $interval)
+                        : null;
 
                     /** @var MachinerySubCategory $machinerySubCategory */
                     $machinerySubCategory = MachinerySubCategory::find($subCategory['machinery_sub_category_id']);
@@ -306,10 +314,15 @@ class VesselMachineryService
         $dueDate = Carbon::create($date);
         /** @var IntervalUnit $intervalUnit */
         $intervalUnit = $interval->unit;
-        if ($intervalUnit instanceof IntervalUnit) {
+        if ($date) {
             switch ($intervalUnit->getAttribute('name')) {
                 case config('interval.units.days'):
                     $dueDate->addDays($interval->getAttribute('value'));
+                    if ($interval->getAttribute('value') > 1) {
+                        $dueDate->subDay();
+                    } else {
+                        $dueDate->addDay();
+                    }
                     break;
                 case config('interval.units.hours'):
                     $dueDate->addHours($interval->getAttribute('value'));
@@ -319,9 +332,16 @@ class VesselMachineryService
                     break;
                 case config('interval.units.months'):
                     $dueDate->addMonths($interval->getAttribute('value'));
+                    $dueDate->subDay();
                     break;
                 case config('interval.units.years'):
-                    $dueDate->addYears($interval->getAttribute('value'));
+                    $years = (int)$interval->getAttribute('value');
+                    $dueDate->addYears($years);
+                    $additionalMonths = 12 * ($interval->getAttribute('value') - $years);
+                    if ($additionalMonths) {
+                        $dueDate->addMonths($additionalMonths);
+                    }
+                    $dueDate->subDay();
                     break;
             }
             return $dueDate;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\VesselMachineryExport;
 use App\Http\Requests\CreateVesselMachineryRequest;
+use App\Http\Requests\DeleteVesselMachineriesRequest;
 use App\Http\Requests\EditVesselMachinerySubCategoryRequest;
 use App\Http\Requests\ImportRequest;
 use App\Http\Requests\SearchVesselMachineryRequest;
@@ -150,15 +151,18 @@ class VesselMachineryController extends Controller
     }
 
     /**
-     * Delete vessel machinery
+     * Delete vessel machinery/s
      *
-     * @param VesselMachinery $vesselMachinery
+     * @param DeleteVesselMachineriesRequest $request
      * @return JsonResponse
      */
-    public function delete(VesselMachinery $vesselMachinery): JsonResponse
+    public function delete(DeleteVesselMachineriesRequest $request): JsonResponse
     {
         try {
-            $this->response['deleted'] = $this->vesselMachineryService->delete($vesselMachinery);
+            $formData = [
+                'vessel_machinery_ids' => $request->getVesselMachineryIds(),
+            ];
+            $this->response['delete'] = $this->vesselMachineryService->delete($formData);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),

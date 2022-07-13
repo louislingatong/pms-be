@@ -11,10 +11,16 @@ Route::group(['middleware' => ['auth:api', 'permission:machinery_access']], func
         ->middleware('permission:machinery_show');
     Route::put('{machinery}', 'MachineryController@update')
         ->middleware('permission:machinery_edit');
-    Route::delete('{machinery}', 'MachineryController@delete')
+
+    Route::delete('/', 'MachineryController@delete')
         ->middleware('permission:machinery_delete');
 
     Route::post('/import', 'MachineryController@import')
         ->middleware('permission:machinery_import');
-    Route::put('{machinery}/add-sub-category', 'MachineryController@addSubCategory');
+
+    Route::put('{machinery}/create-sub-category', 'MachineryController@createSubCategory')
+        ->middleware('permission:sub_category_create');
+
+    Route::put('{machinery}/delete-sub-category', 'MachineryController@deleteSubCategory')
+        ->middleware('permission:sub_category_delete');
 });

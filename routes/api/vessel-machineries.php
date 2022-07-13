@@ -11,14 +11,16 @@ Route::group(['middleware' => ['auth:api', 'permission:vessel_machinery_access']
         ->middleware('permission:vessel_machinery_show');
     Route::put('{vesselMachinery}', 'VesselMachineryController@update')
         ->middleware('permission:vessel_machinery_edit');
-    Route::delete('{vesselMachinery}', 'VesselMachineryController@delete')
+
+    Route::delete('/', 'VesselMachineryController@delete')
         ->middleware('permission:vessel_machinery_delete');
 
     Route::post('/import', 'VesselMachineryController@import')
         ->middleware('permission:vessel_machinery_import');
 
-    Route::put('{vesselMachinery}/edit-machinery-sub-categories', 'VesselMachineryController@editMachinerySubCategories')
-        ->middleware('permission:vessel_sub_category_edit');;
     Route::get('{vesselMachinery}/export', 'VesselMachineryController@exportVesselMachinery')
-        ->middleware('permission:vessel_sub_category_export');
+        ->middleware('permission:vessel_machinery_export');
+
+    Route::put('{vesselMachinery}/edit-machinery-sub-categories', 'VesselMachineryController@editMachinerySubCategories')
+        ->middleware('permission:vessel_sub_category_edit');
 });

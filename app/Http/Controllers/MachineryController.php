@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AddSubCategoryRequest;
 use App\Http\Requests\CreateMachineryRequest;
+use App\Http\Requests\CreateSubCategoryRequest;
+use App\Http\Requests\DeleteMachineriesRequest;
+use App\Http\Requests\DeleteSubCategoriesRequest;
 use App\Http\Requests\ImportRequest;
 use App\Http\Requests\SearchMachineryRequest;
 use App\Http\Requests\UpdateMachineryRequest;
@@ -142,15 +144,18 @@ class MachineryController extends Controller
     }
 
     /**
-     * Delete machinery
+     * Delete machinery/s
      *
-     * @param Machinery $machinery
+     * @param DeleteMachineriesRequest $request
      * @return JsonResponse
      */
-    public function delete(Machinery $machinery): JsonResponse
+    public function delete(DeleteMachineriesRequest $request): JsonResponse
     {
         try {
-            $this->response['deleted'] = $this->machineryService->delete($machinery);
+            $formData = [
+                'machinery_ids' => $request->getMachineryIds(),
+            ];
+            $this->response['delete'] = $this->machineryService->delete($formData);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),
@@ -193,11 +198,11 @@ class MachineryController extends Controller
     }
 
     /**
-     * @param AddSubCategoryRequest $request
+     * @param CreateSubCategoryRequest $request
      * @param Machinery $machinery
      * @return JsonResponse
      */
-    public function addSubCategory(AddSubCategoryRequest $request, Machinery $machinery): JsonResponse
+    public function createSubCategory(CreateSubCategoryRequest $request, Machinery $machinery): JsonResponse
     {
         $request->validated();
 
@@ -207,6 +212,31 @@ class MachineryController extends Controller
                 'name' => $request->getName(),
             ];
             $machinery = $this->machineryService->addSubCategory($formData, $machinery);
+            $this->response['data'] = new MachineryWithSubCategoriesResource($machinery);
+        } catch (Exception $e) {
+            $this->response = [
+                'error' => $e->getMessage(),
+                'code' => 500,
+            ];
+        }
+
+        return response()->json($this->response, $this->response['code']);
+    }
+
+    /**
+     * @param DeleteSubCategoriesRequest $request
+     * @param Machinery $machinery
+     * @return JsonResponse
+     */
+    public function deleteSubCategory(DeleteSubCategoriesRequest $request, Machinery $machinery): JsonResponse
+    {
+        $request->validated();
+
+        try {
+            $formData = [
+                'sub_category_ids' => $request->getSubCategoryIds(),
+            ];
+            $machinery = $this->machineryService->removeSubCategory($formData, $machinery);
             $this->response['data'] = new MachineryWithSubCategoriesResource($machinery);
         } catch (Exception $e) {
             $this->response = [

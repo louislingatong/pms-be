@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateVesselRequest;
+use App\Http\Requests\DeleteVesselsRequest;
 use App\Http\Requests\SearchVesselRequest;
 use App\Http\Requests\UpdateVesselRequest;
 use App\Http\Resources\VesselResource;
@@ -226,15 +227,18 @@ class VesselController extends Controller
     }
 
     /**
-     * Delete vessel
+     * Delete vessel/s
      *
-     * @param Vessel $vessel
+     * @param DeleteVesselsRequest $request
      * @return JsonResponse
      */
-    public function delete(Vessel $vessel): JsonResponse
+    public function delete(DeleteVesselsRequest $request): JsonResponse
     {
         try {
-            $this->response['deleted'] = $this->vesselService->delete($vessel);
+            $formData = [
+                'vessel_ids' => $request->getVesselIds(),
+            ];
+            $this->response['delete'] = $this->vesselService->delete($formData);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),
