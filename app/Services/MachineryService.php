@@ -171,12 +171,12 @@ class MachineryService
      *
      * @param array $params
      * @param Machinery $machinery
-     * @return bool
+     * @return Machinery
      * @throws
      */
-    public function removeSubCategory(array $params, Machinery $machinery): bool
+    public function removeSubCategory(array $params, Machinery $machinery): Machinery
     {
         $machinery->subCategories()->whereIn('id', $params['sub_category_ids'])->delete();
-        return true;
+        return $machinery;
     }
 }
