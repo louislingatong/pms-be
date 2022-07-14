@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
@@ -10,7 +11,7 @@ class AllWorksExport implements FromArray, WithMultipleSheets
     protected $allWorks;
     protected $vesselName;
 
-    public function __construct(array $allWorks, string $vesselName)
+    public function __construct(Collection $allWorks, string $vesselName)
     {
         $this->allWorks = $allWorks;
         $this->vesselName = $vesselName;
@@ -18,7 +19,7 @@ class AllWorksExport implements FromArray, WithMultipleSheets
 
     public function array(): array
     {
-        return $this->allWorks;
+        return $this->allWorks->toArray();
     }
 
     public function sheets(): array

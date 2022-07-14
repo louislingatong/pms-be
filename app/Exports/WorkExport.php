@@ -2,8 +2,14 @@
 
 namespace App\Exports;
 
+use App\Models\Machinery;
+use App\Models\MachineryMaker;
+use App\Models\MachineryModel;
+use App\Models\RunningHour;
 use App\Models\Vessel;
+use App\Models\VesselMachinery;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
@@ -21,13 +27,13 @@ class WorkExport implements FromArray, WithTitle, WithHeadings, WithMapping, Wit
 {
     protected $works;
     protected $vesselName;
-    protected $sheetName;
+    protected $machineryName;
 
-    public function __construct(array $works, string $vesselName, string $sheetName)
+    public function __construct(Collection $works, string $vesselName, string $machineryName)
     {
         $this->works = $works;
         $this->vesselName = $vesselName;
-        $this->sheetName = $sheetName;
+        $this->machineryName = $machineryName;
     }
 
     /**
@@ -35,7 +41,7 @@ class WorkExport implements FromArray, WithTitle, WithHeadings, WithMapping, Wit
      */
     public function array(): array
     {
-        return $this->works;
+        return $this->works->toArray();
     }
 
     /**
@@ -43,7 +49,7 @@ class WorkExport implements FromArray, WithTitle, WithHeadings, WithMapping, Wit
      */
     public function title(): string
     {
-        return $this->sheetName;
+        return $this->machineryName;
     }
 
     /**
@@ -98,7 +104,20 @@ class WorkExport implements FromArray, WithTitle, WithHeadings, WithMapping, Wit
         /** @var Vessel $vessel */
         $vessel = Vessel::where('name', '=', $this->vesselName)->first();
 
-        $style = [
+        /** @var Machinery $machinery */
+        $machinery = Machinery::where('name', '=', $this->machineryName)->first();
+        /** @var VesselMachinery $vesselMachinery */
+        $vesselMachinery = VesselMachinery::where('vessel_id', $vessel->getAttribute('id'))
+            ->where('machinery_id', $machinery->getAttribute('id'))
+            ->first();
+        /** @var MachineryModel $model */
+        $model = $vesselMachinery->model;
+        /** @var MachineryMaker $maker */
+        $maker = $vesselMachinery->maker;
+        /** @var RunningHour $runningHour */
+        $runningHour = $vesselMachinery->currentRunningHour;
+
+        $wrapTextAlignTopStyle = [
             'alignment' => [
                 'wrapText' => true,
                 'vertical' => Alignment::VERTICAL_TOP,
@@ -136,10 +155,7 @@ class WorkExport implements FromArray, WithTitle, WithHeadings, WithMapping, Wit
         ];
 
 
-        $headerStyle = [
-            'font' => [
-                'bold' => true,
-            ],
+        $fillGrayStyle = [
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
                 'color' => [
@@ -149,36 +165,62 @@ class WorkExport implements FromArray, WithTitle, WithHeadings, WithMapping, Wit
         ];
 
         return [
-            BeforeSheet::class => function (BeforeSheet $event) use ($vessel) {
+            BeforeSheet::class => function (BeforeSheet $event) use ($vessel, $machinery, $model, $maker, $runningHour) {
                 $event->sheet->setCellValue('B1', 'Name of Vessel:');
                 $event->sheet->setCellValue('B2', 'Vessel\'s Flag:');
+                $event->sheet->setCellValue('B3', 'Name of Machinery:');
+                $event->sheet->setCellValue('B4', 'Model:');
+                $event->sheet->setCellValue('B5', 'Maker:');
 
                 $event->sheet->setCellValue('D1', 'Class:');
                 $event->sheet->setCellValue('D2', 'IMO No.:');
+                $event->sheet->setCellValue('D3', 'Machinery Code No.:');
+                $event->sheet->setCellValue('D4', 'Running Hours:');
+                $event->sheet->setCellValue('D5', 'Date Updated:');
 
                 $event->sheet->setCellValue('C1', $vessel->getAttribute('name'));
                 $event->sheet->setCellValue('C2', $vessel->getAttribute('flag'));
+                $event->sheet->setCellValue('C3', $machinery->getAttribute('name'));
+                $event->sheet->setCellValue('C4', ($model instanceof MachineryModel)
+                    ? $model->getAttribute('name')
+                    : ''
+                );
+                $event->sheet->setCellValue('C5', ($maker instanceof MachineryMaker)
+                    ? $maker->getAttribute('name')
+                    : ''
+                );
 
                 $event->sheet->setCellValue('E1', '');
                 $event->sheet->setCellValue('E2', $vessel->getAttribute('imo_no'));
+                $event->sheet->setCellValue('E3', $machinery->getAttribute('code_name'));
+                if ($runningHour instanceof RunningHour) {
+                    $event->sheet->setCellValue('E4', $runningHour->getAttribute('running_hours'));
+                    $event->sheet->setCellValue('E5', $runningHour->getAttribute('updating_date'));
+                }
             },
             AfterSheet::class => function (AfterSheet $event) use (
-                $style,
+                $wrapTextAlignTopStyle,
                 $fontBoldStyle,
                 $alignRightStyle,
                 $fillLightYellowStyle,
                 $borderBottomStyle,
-                $headerStyle
+                $fillGrayStyle
             ) {
-                $event->sheet->getStyle('A:K')->applyFromArray($style);
-                $event->sheet->getStyle('A1:K2')->applyFromArray($fontBoldStyle);
-                $event->sheet->getStyle('B1:B2')->applyFromArray($alignRightStyle);
-                $event->sheet->getStyle('D1:D2')->applyFromArray($alignRightStyle);
+                $event->sheet->getStyle('A:K')->applyFromArray($wrapTextAlignTopStyle);
+                $event->sheet->getStyle('A1:K7')->applyFromArray($fontBoldStyle);
+                $event->sheet->getStyle('A7:K7')->applyFromArray($fillGrayStyle);
+                $event->sheet->getStyle('B1:B5')->applyFromArray($alignRightStyle);
+                $event->sheet->getStyle('D1:D5')->applyFromArray($alignRightStyle);
                 $event->sheet->getStyle('C1')->applyFromArray(array_merge($fillLightYellowStyle, $borderBottomStyle));
                 $event->sheet->getStyle('C2')->applyFromArray($borderBottomStyle);
+                $event->sheet->getStyle('C3')->applyFromArray($borderBottomStyle);
+                $event->sheet->getStyle('C4')->applyFromArray($borderBottomStyle);
+                $event->sheet->getStyle('C5')->applyFromArray($borderBottomStyle);
                 $event->sheet->getStyle('E1')->applyFromArray($borderBottomStyle);
                 $event->sheet->getStyle('E2')->applyFromArray($borderBottomStyle);
-                $event->sheet->getStyle('A4:K4')->applyFromArray($headerStyle);
+                $event->sheet->getStyle('E3')->applyFromArray($borderBottomStyle);
+                $event->sheet->getStyle('E4')->applyFromArray(array_merge($fillLightYellowStyle, $borderBottomStyle));
+                $event->sheet->getStyle('E5')->applyFromArray(array_merge($fillLightYellowStyle, $borderBottomStyle));
             }
         ];
     }
@@ -211,7 +253,7 @@ class WorkExport implements FromArray, WithTitle, WithHeadings, WithMapping, Wit
      */
     public function startCell(): string
     {
-        return 'A4';
+        return 'A7';
     }
 
     /**

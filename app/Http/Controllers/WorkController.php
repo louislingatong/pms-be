@@ -161,7 +161,7 @@ class WorkController extends Controller
 
         $results = $this->workService->export($conditions);
 
-        return Excel::download(new AllWorksExport($results->toArray(), $request->getVessel()), 'Works.xls');
+        return Excel::download(new AllWorksExport($results, $request->getVessel()), 'Works.xls');
     }
 
     /**
