@@ -33,7 +33,7 @@ class VesselMachineryImport implements ToModel, WithHeadingRow, WithValidation
         $inchargeRank = Rank::where('name', $row['incharge_rank'])->first();
 
         /** @var VesselMachinery $vesselMachinery */
-        $vesselMachinery = Machinery::where('vessel_id', $vessel->getAttribute('id'))
+        $vesselMachinery = VesselMachinery::where('vessel_id', $vessel->getAttribute('id'))
             ->where('machinery_id', $machinery->getAttribute('id'))
             ->where('incharge_rank_id', $inchargeRank->getAttribute('id'))
             ->first();
