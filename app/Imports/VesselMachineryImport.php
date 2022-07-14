@@ -21,7 +21,7 @@ class VesselMachineryImport implements ToModel, WithHeadingRow, WithValidation
      * @param array $row
      * @return VesselMachinery
      */
-    public function model(array $row): VesselMachinery
+    public function model(array $row): ?VesselMachinery
     {
         /** @var Vessel $vessel */
         $vessel = Vessel::where('name', $row['vessel'])->first();
@@ -32,26 +32,36 @@ class VesselMachineryImport implements ToModel, WithHeadingRow, WithValidation
         /** @var Rank $inchargeRank */
         $inchargeRank = Rank::where('name', $row['incharge_rank'])->first();
 
-        if ($row['model']) {
-            /** @var MachineryModel $machineryModel */
-            $machineryModel = MachineryModel::firstOrCreate(['name' => $row['model']]);
-        }
-        if ($row['maker']) {
-            /** @var MachineryMaker $machineryMaker */
-            $machineryMaker = MachineryMaker::firstOrCreate(['name' => $row['maker']]);
+        /** @var VesselMachinery $vesselMachinery */
+        $vesselMachinery = Machinery::where('vessel_id', $vessel->getAttribute('id'))
+            ->where('machinery_id', $machinery->getAttribute('id'))
+            ->where('incharge_rank_id', $inchargeRank->getAttribute('id'))
+            ->first();
+
+        if (is_null($vesselMachinery)) {
+            if ($row['model']) {
+                /** @var MachineryModel $machineryModel */
+                $machineryModel = MachineryModel::firstOrCreate(['name' => $row['model']]);
+            }
+            if ($row['maker']) {
+                /** @var MachineryMaker $machineryMaker */
+                $machineryMaker = MachineryMaker::firstOrCreate(['name' => $row['maker']]);
+            }
+
+            return new VesselMachinery([
+                'vessel_id' => $vessel->getAttribute('id'),
+                'machinery_id' => $machinery->getAttribute('id'),
+                'incharge_rank_id' => $inchargeRank->getAttribute('id'),
+                'machinery_model_id' => (isset($machineryModel) && ($machineryModel instanceof MachineryModel))
+                    ? $machineryModel->getAttribute('id')
+                    : null,
+                'machinery_maker_id' => (isset($machineryMaker) && ($machineryMaker instanceof MachineryMaker))
+                    ? $machineryMaker->getAttribute('id')
+                    : null,
+            ]);
         }
 
-        return new VesselMachinery([
-            'vessel_id' => $vessel->getAttribute('id'),
-            'machinery_id' => $machinery->getAttribute('id'),
-            'incharge_rank_id' => $inchargeRank->getAttribute('id'),
-            'machinery_model_id' => (isset($machineryModel) && ($machineryModel instanceof MachineryModel))
-                ? $machineryModel->getAttribute('id')
-                : null,
-            'machinery_maker_id' => (isset($machineryMaker) && ($machineryMaker instanceof MachineryMaker))
-                ? $machineryMaker->getAttribute('id')
-                : null,
-        ]);
+        return null;
     }
 
     /**

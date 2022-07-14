@@ -65,7 +65,7 @@ class WorkService
         $skip = ($page > 1) ? ($page * $limit - $limit) : 0;
 
         $query = $this->vesselMachinerySubCategory->whereHas('vesselMachinery.vessel', function ($q) use ($conditions) {
-            $q->where('name', '=', $conditions['vessel']);
+            $q->where('name', $conditions['vessel']);
         });
 
         if ($conditions['department']) {

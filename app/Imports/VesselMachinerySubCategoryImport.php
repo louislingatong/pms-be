@@ -24,7 +24,7 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
      * @return VesselMachinerySubCategory
      * @throws
      */
-    public function model(array $row): VesselMachinerySubCategory
+    public function model(array $row): ?VesselMachinerySubCategory
     {
         /** @var VesselMachinery $vesselMachinery */
         $vesselMachinery = VesselMachinery::whereHas('vessel', function ($q) use ($row) {
@@ -42,43 +42,53 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
             ->where('name', $row['name'])
             ->first();
 
-        $interval = null;
-        $dueDate = null;
+        /** @var VesselMachinerySubCategory $vesselMachinerySubCategory */
+        $vesselMachinerySubCategory = VesselMachinerySubCategory::where('code', $row['code'])
+            ->where('vessel_machinery_id', $vesselMachinery->getAttribute('id'))
+            ->where('machinery_sub_category_id', $machinerySubCategory->getAttribute('id'))
+            ->first();
 
-        if ($row['interval']) {
-            /** @var Interval $interval */
-            $interval = Interval::where('name', $row['interval'])->first();
+        if (is_null($vesselMachinerySubCategory)) {
+            $interval = null;
+            $dueDate = null;
 
-            if (!($interval instanceof Interval)) {
-                throw new IntervalNotFoundException('Unable to retrieve interval ' . $row['interval']);
+            if ($row['interval']) {
+                /** @var Interval $interval */
+                $interval = Interval::where('name', $row['interval'])->first();
+
+                if (!($interval instanceof Interval)) {
+                    throw new IntervalNotFoundException('Unable to retrieve interval ' . $row['interval']);
+                }
+
+                $dueDate = $interval->getAttribute('value')
+                    ? $this->getDueDate($row['commissioning_date'], $interval)
+                    : null;
             }
 
-            $dueDate = $interval->getAttribute('value')
-                ? $this->getDueDate($row['commissioning_date'], $interval)
-                : null;
+            $description = null;
+
+            if ($row['description']) {
+                $description = $machinerySubCategory
+                    ->descriptions()
+                    ->firstOrCreate([
+                        'name' => $row['description'],
+                    ]);
+            }
+
+            return new VesselMachinerySubCategory([
+                'code' => $row['code'],
+                'vessel_machinery_id' => $vesselMachinery->getAttribute('id'),
+                'interval_id' => $row['interval'] ? $interval->getAttribute('id') : null,
+                'installed_date' => $row['commissioning_date'] ? Carbon::create($row['commissioning_date']) : null,
+                'due_date' => $dueDate,
+                'machinery_sub_category_id' => $machinerySubCategory->getAttribute('id'),
+                'machinery_sub_category_description_id' => $row['description']
+                    ? $description->getAttribute('id')
+                    : null,
+            ]);
         }
 
-        $description = null;
-
-        if ($row['description']) {
-            $description = $machinerySubCategory
-                ->descriptions()
-                ->firstOrCreate([
-                    'name' => $row['description'],
-                ]);
-        }
-
-        return new VesselMachinerySubCategory([
-            'code' => $row['code'],
-            'vessel_machinery_id' => $vesselMachinery->getAttribute('id'),
-            'interval_id' => $row['interval'] ? $interval->getAttribute('id') : null,
-            'installed_date' => $row['commissioning_date'] ? Carbon::create($row['commissioning_date']) : null,
-            'due_date' => $dueDate,
-            'machinery_sub_category_id' => $machinerySubCategory->getAttribute('id'),
-            'machinery_sub_category_description_id' => $row['description']
-                ? $description->getAttribute('id')
-                : null,
-        ]);
+        return null;
     }
 
     /**
