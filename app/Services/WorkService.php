@@ -164,12 +164,14 @@ class WorkService
                             $runningHour = $vesselMachinery->currentRunningHour;
 
                             if (!($runningHour instanceof RunningHour)) {
-                                throw new RunningHourNotFoundException('Unable to retrieve running hour of code ' . $vesselMachinerySubCategory->getAttribute('code'));
+                                $code = $vesselMachinerySubCategory->getAttribute('code');
+                                $message = "Unable to retrieve running hour of code $code";
+                                throw new RunningHourNotFoundException($message);
                             }
 
                             if ($runningHour->getAttribute('updating_date')
                                 && $runningHour->getAttribute('running_hours')
-                                && $work->getAttribute('running_hours')) {
+                                && !is_null($work->getAttribute('running_hours'))) {
                                 $updatingDate = Carbon::create($runningHour->getAttribute('updating_date'));
                                 $remainingIntervals = $runningHour->getAttribute('running_hours') - $work->getAttribute('running_hours');
                                 $remainingIntervals = $interval->getAttribute('value') - $remainingIntervals;
