@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Exceptions\IntervalNotFoundException;
+use App\Exceptions\MachinerySubCategoryNotFoundException;
 use App\Exceptions\VesselMachineryNotFoundException;
 use App\Models\Interval;
 use App\Models\IntervalUnit;
@@ -34,13 +35,23 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
         })->first();
 
         if (!($vesselMachinery instanceof VesselMachinery)) {
-            throw new VesselMachineryNotFoundException('Unable to retrieve machinery ' . $row['machinery'] . ' in vessel ' . $row['vessel']);
+            $machinery = $row['machinery'];
+            $vessel = $row['vessel'];
+            $message = "Unable to retrieve machinery $machinery in vessel $vessel";
+            throw new VesselMachineryNotFoundException($message);
         }
 
         /** @var MachinerySubCategory $machinerySubCategory */
         $machinerySubCategory = MachinerySubCategory::where('code', $row['code'])
             ->where('name', $row['name'])
             ->first();
+
+        if (!($machinerySubCategory instanceof MachinerySubCategory)) {
+            $machinery = $row['machinery'];
+            $subCategoryCode = $row['code'];
+            $message = "Unable to retrieve sub category code $subCategoryCode in machinery $machinery";
+            throw new MachinerySubCategoryNotFoundException($message);
+        }
 
         /** @var VesselMachinerySubCategory $vesselMachinerySubCategory */
         $vesselMachinerySubCategory = VesselMachinerySubCategory::where('code', $row['code'])

@@ -22,9 +22,9 @@ class MachinerySubCategoryImport implements ToModel, WithHeadingRow, WithValidat
         /** @var Machinery $machinery */
         $machinery = Machinery::where('name', $row['machinery'])->first();
 
-        $machinerySubCategory = MachinerySubCategory::where('code', $row['code'])
+        $machinerySubCategory = MachinerySubCategory::where('machinery_id', $machinery->getAttribute('id'))
+            ->where('code', $row['code'])
             ->where('name', $row['name'])
-            ->where('machinery_id', $machinery->getAttribute('id'))
             ->first();
 
         if (is_null($machinerySubCategory)) {
