@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => ['cors', 'auth:api', 'permission:jobs_access']], function () {
+Route::group(['middleware' => ['auth:api', 'permission:jobs_access']], function () {
     Route::get('/', 'WorkController@index')
         ->middleware('permission:jobs_show');
     Route::post('/', 'WorkController@create')

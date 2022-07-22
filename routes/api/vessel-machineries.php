@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => ['cors', 'auth:api', 'permission:vessel_machinery_access']], function () {
+Route::group(['middleware' => ['auth:api', 'permission:vessel_machinery_access']], function () {
     Route::get('/', 'VesselMachineryController@index')
         ->middleware('permission:vessel_machinery_show');
     Route::post('/', 'VesselMachineryController@create')

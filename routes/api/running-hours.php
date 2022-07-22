@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => ['cors', 'auth:api', 'permission:running_hours_access']], function () {
+Route::group(['middleware' => ['auth:api', 'permission:running_hours_access']], function () {
     Route::get('/', 'RunningHourController@index')
         ->middleware('permission:running_hours_show');
     Route::post('/', 'RunningHourController@create')

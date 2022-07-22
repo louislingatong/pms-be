@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => ['cors', 'auth:api', 'permission:machinery_access']], function () {
+Route::group(['middleware' => ['auth:api', 'permission:machinery_access']], function () {
     Route::get('/', 'MachineryController@index')
         ->middleware('permission:machinery_show');
     Route::post('/', 'MachineryController@create')
