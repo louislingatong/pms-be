@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => ['auth:api', 'permission:interval_access']], function () {
+Route::group(['middleware' => ['cors', 'auth:api', 'permission:interval_access']], function () {
     Route::get('/', 'IntervalController@index')
         ->middleware('permission:interval_show');
     Route::post('/', 'IntervalController@create')

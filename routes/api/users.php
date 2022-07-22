@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => ['auth:api']], function () {
+Route::group(['middleware' => ['cors', 'auth:api']], function () {
     Route::get('/', 'UserController@index');
     Route::post('/', 'UserController@create');
     Route::get('{user}', 'UserController@read');
