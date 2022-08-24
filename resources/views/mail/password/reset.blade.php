@@ -32,6 +32,7 @@
             border: 1px solid transparent;
             border-radius: 4px;
         }
+
         .btn-link-primary {
             color: #fff;
             background-color: #337ab7;
@@ -41,7 +42,7 @@
     </style>
 </head>
 <body>
-Hi {{ $user->first_name }},
+Good day {{ $user->first_name }},
 <br>
 <br>
 <br>
@@ -58,7 +59,7 @@ If you didn’t mean to reset your password, then you can just ignore this email
 <br>
 Yours truly,
 <br>
-Administrator
+ASMI Administrator
 </body>
 </html>
 

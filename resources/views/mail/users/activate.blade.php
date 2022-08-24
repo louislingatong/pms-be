@@ -32,6 +32,7 @@
             border: 1px solid transparent;
             border-radius: 4px;
         }
+
         .btn-link-primary {
             color: #fff;
             background-color: #337ab7;
@@ -41,14 +42,14 @@
     </style>
 </head>
 <body>
-Hi {{ $user->first_name }},
+Good day {{ $user->first_name }},
 <br>
 <br>
 <br>
-Your account has been created. To activate your account, click the button below.
+Your account has been created on our system. To activate your account, click the button below.
 <br>
 <a class="btn btn-link-primary" href="{{ $url }}" role="button">
-    Activate
+    Activate !
 </a>
 <br>
 <br>
@@ -58,6 +59,6 @@ If this wasn't you, please ignore this message.
 <br>
 Yours truly,
 <br>
-Administrator
+ASMI Administrator
 </body>
 </html>
