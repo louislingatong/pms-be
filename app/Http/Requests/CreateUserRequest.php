@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Rules\EmailAddressRule;
-use App\Rules\PasswordRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateUserRequest extends FormRequest
@@ -23,10 +22,7 @@ class CreateUserRequest extends FormRequest
                 new EmailAddressRule,
                 'unique:users,email',
             ],
-            'password' => [
-                'required',
-                new PasswordRule,
-            ],
+            'password' => 'required',
         ];
     }
 

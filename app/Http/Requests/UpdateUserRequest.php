@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use App\Models\User;
 use App\Rules\EmailAddressRule;
-use App\Rules\PasswordRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateUserRequest extends FormRequest
@@ -24,10 +23,7 @@ class UpdateUserRequest extends FormRequest
                 new EmailAddressRule,
                 'unique:users,email,' . $this->getId() . ',id',
             ],
-            'password' => [
-                'nullable',
-                new PasswordRule,
-            ],
+            'password' => 'nullable',
         ];
     }
 
