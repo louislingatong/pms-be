@@ -181,7 +181,7 @@ class WorkController extends Controller
      * @param DownloadFileRequest $request
      * @return BinaryFileResponse
      */
-    public function downloadFile(DownloadFileRequest $request): BinaryFileResponse
+    public function downloadFile(DownloadFileRequest $request)
     {
         return Storage::disk('public')->download($request->getPath());
     }
