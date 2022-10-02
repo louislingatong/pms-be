@@ -9,6 +9,7 @@ use App\Models\Machinery;
 use App\Models\MachineryMaker;
 use App\Models\MachineryModel;
 use App\Models\MachinerySubCategory;
+use App\Models\MachinerySubCategoryDescription;
 use App\Models\Rank;
 use App\Models\Vessel;
 use App\Models\VesselMachinery;
@@ -104,7 +105,7 @@ class VesselMachineryService
                 $machineryMaker = $this->findOrCreateMakerByName($params['maker']);
                 $params['machinery_maker_id'] = $machineryMaker->getAttribute('id');
             }
-            $vesselMachinery = $this->vesselMachinery->create([
+            $vesselMachinery = $this->vesselMachinery->firstOrCreate([
                 'vessel_id' => $vessel->getAttribute('id'),
                 'machinery_id' => $machinery->getAttribute('id'),
                 'incharge_rank_id' => $inchargeRank->getAttribute('id'),
@@ -375,5 +376,76 @@ class VesselMachineryService
         } else {
             return null;
         }
+    }
+
+    /**
+     * Copy all vessel machineries to a vessel
+     *
+     * @param array $params
+     * @return bool
+     * @throws
+     */
+    public function copyAllMachinery(array $params): bool
+    {
+        DB::beginTransaction();
+
+        try {
+            /** @var VesselMachinery $machineriesOfVesselFrom */
+            $machineriesOfVesselFrom = $this->vesselMachinery->whereHas('vessel', function ($q) use ($params) {
+                $q->where('name', '=', $params['vesselFrom']);
+            })
+                ->get();
+
+            foreach ($machineriesOfVesselFrom as $machineryOfVesselFrom) {
+                /** @var Machinery $machinery */
+                $machinery = $machineryOfVesselFrom->machinery;
+                /** @var Rank $inchargeRank */
+                $inchargeRank = $machineryOfVesselFrom->inchargeRank;
+                /** @var MachineryModel $machineryModel */
+                $machineryModel = $machineryOfVesselFrom->machineryModel;
+                /** @var MachineryMaker $machineryMaker */
+                $machineryMaker = $machineryOfVesselFrom->machineryMaker;
+
+                $vesselMachineryData = [
+                    'vessel' => $params['vesselTo'],
+                    'machinery' => $machinery->getAttribute('name'),
+                    'incharge_rank' => $inchargeRank->getAttribute('name'),
+                    'model' => $machineryModel ? $machineryModel->getAttribute('name') : null,
+                    'maker' => $machineryMaker ? $machineryMaker->getAttribute('name') : null,
+                ];
+
+                $machineryOfVesselTo = $this->create($vesselMachineryData);
+
+                /** @var VesselMachinerySubCategory $vesselSubCategories */
+                $vesselSubCategories = $machineryOfVesselFrom->subCategories;
+
+                /** @var VesselMachinerySubCategory $vesselSubCategory */
+                foreach ($vesselSubCategories as $vesselSubCategory) {
+                    /** @var Interval $interval */
+                    $interval = $vesselSubCategory->interval;
+                    /** @var MachinerySubCategoryDescription $description */
+                    $description = $vesselSubCategory->description;
+                    /** @var MachinerySubCategory $subCategory */
+                    $subCategory = $vesselSubCategory->subCategory;
+
+                    $machineryOfVesselTo->subCategories()->firstOrCreate([
+                        'code' => $vesselSubCategory->getAttribute('code'),
+                        'installed_date' => Carbon::create($vesselSubCategory->getAttribute('installed_date')),
+                        'due_date' => $vesselSubCategory->getAttribute('due_date'),
+                        'interval_id' => $interval ? $interval->getAttribute('id') : null,
+                        'machinery_sub_category_id' => $subCategory->getAttribute('id'),
+                        'machinery_sub_category_description_id' => $description ? $description->getAttribute('id') : null,
+                    ]);
+                }
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+
+            throw $e;
+        }
+
+        return true;
     }
 }

@@ -124,7 +124,7 @@ class VesselMachinerySubCategoryImport implements ToModel, WithHeadingRow, WithV
             '*.commissioning_date' => [
                 'nullable',
                 'date',
-                'date_format:d-M-y',
+                'date_format:d-M-Y',
             ],
         ];
     }
