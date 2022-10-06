@@ -239,7 +239,7 @@ class VesselMachineryService
                     $interval = Interval::whereName($subCategory['interval'])->first();
 
                     $dueDate = $interval->getAttribute('value')
-                        ? $this->getDueDate($params['installed_date'], $interval)
+                        ? $this->getDueDate($subCategory['installed_date'], $interval)
                         : null;
 
                     /** @var MachinerySubCategory $machinerySubCategory */
