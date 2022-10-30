@@ -22,9 +22,14 @@ class EmployeeResource extends JsonResource
         /** @var User $user */
         $user = $employee->user;
 
-        $assignedPermissions = $user->permissions;
+        $assignedPermissions = collect([]);
         foreach ($user->roles as $role) {
             $assignedPermissions = $assignedPermissions->merge($role->permissions);
+        }
+
+        $userPermissions = $user->permissions;
+        if ($userPermissions->isNotEmpty()) {
+            $assignedPermissions = $userPermissions;
         }
 
         return [

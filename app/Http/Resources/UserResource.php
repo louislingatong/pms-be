@@ -19,13 +19,17 @@ class UserResource extends JsonResource
         /** @var User $user */
         $user = $this->resource;
 
-        $assignedPermissions = $user->permissions;
+        $assignedPermissions = collect([]);
         foreach ($user->roles as $role) {
             $assignedPermissions = $assignedPermissions->merge($role->permissions);
         }
 
-        $parsedAssignedPermissions = [];
+        $userPermissions = $user->permissions;
+        if ($userPermissions->isNotEmpty()) {
+            $assignedPermissions = $userPermissions;
+        }
 
+        $parsedAssignedPermissions = [];
         foreach ($assignedPermissions as $permission) {
             $parsedAssignedPermissions[$permission->name] = $permission->id;
         }
