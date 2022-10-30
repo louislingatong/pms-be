@@ -58,7 +58,7 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
             ->first();
 
         if (!($vesselMachinerySubCategory instanceof VesselMachinerySubCategory)) {
-            throw new VesselMachinerySubCategoryNotFoundException();
+            throw new VesselMachinerySubCategoryNotFoundException('Unable to retrieve vessel sub category [' . $machinerySubCategory->getAttribute('code') . ']');
         }
 
         /** @var User $user */
