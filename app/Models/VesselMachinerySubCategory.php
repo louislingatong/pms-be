@@ -93,7 +93,7 @@ class VesselMachinerySubCategory extends Model
     public function worksHistory(): HasMany
     {
         return $this->HasMany(Work::class, 'vessel_machinery_sub_category_id')
-            ->orderBy('last_done', 'DESC');
+            ->orderBy('created_at', 'DESC');
     }
 
     /**
