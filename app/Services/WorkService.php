@@ -2,11 +2,9 @@
 
 namespace App\Services;
 
-use App\Exceptions\RunningHourNotFoundException;
 use App\Http\Resources\VesselMachinerySubCategoryWorkResource;
 use App\Models\Interval;
 use App\Models\IntervalUnit;
-use App\Models\RunningHour;
 use App\Models\VesselMachinery;
 use App\Models\VesselMachinerySubCategory;
 use App\Models\Work;
@@ -159,29 +157,13 @@ class WorkService
 
                         $isHours = $intervalUnit->getAttribute('name') === config('interval.units.hours');
 
-                        if ($isHours) {
-                            /** @var RunningHour $runningHour */
-                            $runningHour = $vesselMachinery->currentRunningHour;
+                        if ($work->getAttribute('last_done')) {
+                            $lastDoneDate = Carbon::create($work->getAttribute('last_done'));
+                            if ($isHours) {
+                                $remainingIntervals = $interval->getAttribute('value') - $work->getAttribute('running_hours');
 
-                            if (!($runningHour instanceof RunningHour)) {
-                                $code = $vesselMachinerySubCategory->getAttribute('code');
-                                $message = "Unable to retrieve running hour of code $code";
-                                throw new RunningHourNotFoundException($message);
-                            }
-
-                            if ($runningHour->getAttribute('updating_date')
-                                && $runningHour->getAttribute('running_hours')
-                                && !is_null($work->getAttribute('running_hours'))) {
-                                $updatingDate = Carbon::create($runningHour->getAttribute('updating_date'));
-                                $remainingIntervals = $runningHour->getAttribute('running_hours') - $work->getAttribute('running_hours');
-                                $remainingIntervals = $interval->getAttribute('value') - $remainingIntervals;
-
-                                $dueDate = $this->getDueDate($updatingDate, $intervalUnit->getAttribute('name'), $remainingIntervals);
-                            }
-                        } else {
-                            if ($work->getAttribute('last_done')) {
-                                $lastDoneDate = Carbon::create($work->getAttribute('last_done'));
-
+                                $dueDate = $this->getDueDate($lastDoneDate, $intervalUnit->getAttribute('name'), $remainingIntervals);
+                            } else {
                                 $dueDate = $this->getDueDate(
                                     $lastDoneDate,
                                     $intervalUnit->getAttribute('name'),
