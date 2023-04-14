@@ -29,7 +29,7 @@ class EditVesselMachinerySubCategoryRequest extends FormRequest
                 'exists:machinery_sub_categories,id',
             ],
             'vessel_machinery_sub_categories.*.installed_date' => [
-                'required',
+                'nullable',
                 'date',
                 'date_format:d-M-Y',
             ],

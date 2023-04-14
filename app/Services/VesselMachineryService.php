@@ -291,7 +291,9 @@ class VesselMachineryService
             }
 
             if (!empty($removedVesselMachinerySubCategories)) {
-                $vesselMachinery->subCategories()->whereIn('id', $removedVesselMachinerySubCategories)->delete();
+                $vesselMachinery->subCategories()->whereHas('subCategory', function ($q) use ($removedVesselMachinerySubCategories) {
+                    $q->whereIn('id', $removedVesselMachinerySubCategories);
+                })->delete();
             }
 
             DB::commit();
