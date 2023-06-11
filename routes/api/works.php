@@ -15,6 +15,7 @@ Route::group(['middleware' => ['auth:api', 'permission:jobs_access']], function 
     Route::get('/file-download', 'WorkController@downloadFile')
         ->middleware('permission:jobs_download_file');
     Route::get('/count', 'WorkController@workCount');
+    Route::put('/update-overdue-date', 'WorkController@updateOverdueDate');
 
     Route::get('{vesselMachinerySubCategory}/export', 'WorkController@exportWorkHistory')
         ->middleware('permission:jobs_history_export');

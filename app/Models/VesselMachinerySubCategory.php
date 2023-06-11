@@ -112,6 +112,9 @@ class VesselMachinerySubCategory extends Model
             })
             ->orWhereHas('description', function ($q) use ($keyword) {
                 $q->where('name', 'LIKE', "%$keyword%");
+            })
+            ->orWhereHas('interval', function ($q) use ($keyword) {
+                $q->where('name', 'LIKE', "%$keyword%");
             });
     }
 

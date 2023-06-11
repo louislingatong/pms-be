@@ -154,11 +154,9 @@ class WorkService
 
                     if ($intervalUnit instanceof IntervalUnit) {
                         $dueDate = null;
-
-                        $isHours = $intervalUnit->getAttribute('name') === config('interval.units.hours');
-
                         if ($work->getAttribute('last_done')) {
                             $lastDoneDate = Carbon::create($work->getAttribute('last_done'));
+                            $isHours = $intervalUnit->getAttribute('name') === config('interval.units.hours');
                             if ($isHours) {
                                 $remainingIntervals = $interval->getAttribute('value') - $work->getAttribute('running_hours');
 
@@ -234,7 +232,7 @@ class WorkService
      *
      * @param Carbon $date
      * @param string $intervalUnit
-     * @param string $intervalValue
+     * @param float|null $intervalValue
      * @return Carbon
      */
     public function getDueDate(Carbon $date, string $intervalUnit, ?float $intervalValue = 0): ?Carbon
@@ -311,5 +309,74 @@ class WorkService
         }
 
         return $query->count();
+    }
+
+    /**
+     * Update overdue date by vessel and interval name
+     *
+     * @param string $vessel
+     * @param string $intervalName
+     * @return bool
+     * @throws
+     */
+    public function updateOverdueDate(string $vessel, string $intervalName): bool
+    {
+        DB::beginTransaction();
+
+        try {
+            $query = VesselMachinerySubCategory::searchByStatus(config('work.statuses.overdue'))
+                ->whereHas('vesselMachinery.vessel', function ($q) use ($vessel) {
+                    $q->where('name', '=', $vessel);
+                })
+                ->whereHas('interval', function ($q) use ($intervalName) {
+                    $q->where('name', '=', $intervalName);
+                });
+
+            /** @var VesselMachinerySubCategory $vesselMachinerySubCategories */
+            $vesselMachinerySubCategories = $query->get();
+
+            /** @var VesselMachinerySubCategory $vesselMachinerySubCategory */
+            foreach ($vesselMachinerySubCategories as $vesselMachinerySubCategory) {
+                /** @var Work $work */
+                $work = $vesselMachinerySubCategory->currentWork;
+
+                /** @var Interval $interval */
+                $interval = $vesselMachinerySubCategory->interval;
+
+                if ($interval instanceof Interval) {
+                    /** @var IntervalUnit $intervalUnit */
+                    $intervalUnit = $interval->unit;
+
+                    if ($intervalUnit instanceof IntervalUnit) {
+                        $dueDate = null;
+                        if ($work->getAttribute('last_done')) {
+                            $lastDoneDate = Carbon::create($work->getAttribute('last_done'));
+                            $isHours = $intervalUnit->getAttribute('name') === config('interval.units.hours');
+                            if ($isHours) {
+                                $remainingIntervals = $interval->getAttribute('value') - $work->getAttribute('running_hours');
+
+                                $dueDate = $this->getDueDate($lastDoneDate, $intervalUnit->getAttribute('name'), $remainingIntervals);
+                            } else {
+                                $dueDate = $this->getDueDate(
+                                    $lastDoneDate,
+                                    $intervalUnit->getAttribute('name'),
+                                    $interval->getAttribute('value')
+                                );
+                            }
+                        }
+                        if (isset($dueDate)) {
+                            $vesselMachinerySubCategory->update(['due_date' => $dueDate]);
+                        }
+                    }
+                }
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+
+            throw $e;
+        }
+
+        return true;
     }
 }

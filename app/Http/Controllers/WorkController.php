@@ -10,6 +10,7 @@ use App\Http\Requests\DownloadFileRequest;
 use App\Http\Requests\ExportWorkRequest;
 use App\Http\Requests\ImportRequest;
 use App\Http\Requests\SearchWorkRequest;
+use App\Http\Requests\UpdateOverdueDateRequest;
 use App\Http\Resources\VesselMachinerySubCategoryWorkResource;
 use App\Imports\WorksImport;
 use App\Models\User;
@@ -200,6 +201,30 @@ class WorkController extends Controller
             $vessel = $request->getVessel();
             $workCounts = $this->workService->countWorkAllStatus($vessel);
             $this->response['data'] = $workCounts;
+        } catch (Exception $e) {
+            $this->response = [
+                'error' => $e->getMessage(),
+                'code' => 500,
+            ];
+        }
+
+        return response()->json($this->response, $this->response['code']);
+    }
+
+    /**
+     * Update overdue date
+     *
+     * @param UpdateOverdueDateRequest $request
+     * @return JsonResponse
+     */
+    public function updateOverdueDate(UpdateOverdueDateRequest $request): JsonResponse
+    {
+        $request->validated();
+
+        try {
+            $vessel = $request->getVessel();
+            $intervalName = $request->getInterval();
+            $this->response['updated'] = $this->workService->updateOverdueDate($vessel, $intervalName);
         } catch (Exception $e) {
             $this->response = [
                 'error' => $e->getMessage(),
