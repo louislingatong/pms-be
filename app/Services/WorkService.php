@@ -340,32 +340,34 @@ class WorkService
                 /** @var Work $work */
                 $work = $vesselMachinerySubCategory->currentWork;
 
-                /** @var Interval $interval */
-                $interval = $vesselMachinerySubCategory->interval;
+                if ($work instanceof Work) {
+                    /** @var Interval $interval */
+                    $interval = $vesselMachinerySubCategory->interval;
 
-                if ($interval instanceof Interval) {
-                    /** @var IntervalUnit $intervalUnit */
-                    $intervalUnit = $interval->unit;
+                    if ($interval instanceof Interval) {
+                        /** @var IntervalUnit $intervalUnit */
+                        $intervalUnit = $interval->unit;
 
-                    if ($intervalUnit instanceof IntervalUnit) {
-                        $dueDate = null;
-                        if ($work->getAttribute('last_done')) {
-                            $lastDoneDate = Carbon::create($work->getAttribute('last_done'));
-                            $isHours = $intervalUnit->getAttribute('name') === config('interval.units.hours');
-                            if ($isHours) {
-                                $remainingIntervals = $interval->getAttribute('value') - $work->getAttribute('running_hours');
+                        if ($intervalUnit instanceof IntervalUnit) {
+                            $dueDate = null;
+                            if ($work->getAttribute('last_done')) {
+                                $lastDoneDate = Carbon::create($work->getAttribute('last_done'));
+                                $isHours = $intervalUnit->getAttribute('name') === config('interval.units.hours');
+                                if ($isHours) {
+                                    $remainingIntervals = $interval->getAttribute('value') - $work->getAttribute('running_hours');
 
-                                $dueDate = $this->getDueDate($lastDoneDate, $intervalUnit->getAttribute('name'), $remainingIntervals);
-                            } else {
-                                $dueDate = $this->getDueDate(
-                                    $lastDoneDate,
-                                    $intervalUnit->getAttribute('name'),
-                                    $interval->getAttribute('value')
-                                );
+                                    $dueDate = $this->getDueDate($lastDoneDate, $intervalUnit->getAttribute('name'), $remainingIntervals);
+                                } else {
+                                    $dueDate = $this->getDueDate(
+                                        $lastDoneDate,
+                                        $intervalUnit->getAttribute('name'),
+                                        $interval->getAttribute('value')
+                                    );
+                                }
                             }
-                        }
-                        if (isset($dueDate)) {
-                            $vesselMachinerySubCategory->update(['due_date' => $dueDate]);
+                            if (isset($dueDate)) {
+                                $vesselMachinerySubCategory->update(['due_date' => $dueDate]);
+                            }
                         }
                     }
                 }

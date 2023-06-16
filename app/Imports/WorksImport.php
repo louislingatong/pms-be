@@ -141,7 +141,7 @@ class WorksImport implements ToModel, WithHeadingRow, WithValidation
      *
      * @param Carbon $date
      * @param string $intervalUnit
-     * @param string $intervalValue
+     * @param float|null $intervalValue
      * @return Carbon
      */
     public function getDueDate(Carbon $date, string $intervalUnit, ?float $intervalValue = 0): ?Carbon
