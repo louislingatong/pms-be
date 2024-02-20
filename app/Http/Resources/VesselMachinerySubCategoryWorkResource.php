@@ -27,6 +27,7 @@ class VesselMachinerySubCategoryWorkResource extends JsonResource
                 ? Carbon::create($vesselMachinerySubCategory->getAttribute('due_date'))->format('d-M-Y')
                 : '',
             'interval' => new IntervalResource($vesselMachinerySubCategory->interval),
+            'isEngineMachinery' => $vesselMachinerySubCategory->vesselMachinery->machinery->department->name === config('vessel.departments.engine'),
             'sub_category' => new MachinerySubCategoryResource($vesselMachinerySubCategory->subCategory),
             'description' => new MachinerySubCategoryDescriptionResource($vesselMachinerySubCategory->description),
             'status' => $vesselMachinerySubCategory->getAttribute('due_date')
